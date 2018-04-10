@@ -3,6 +3,14 @@ package com.socketapp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.react.rnspinkit.RNSpinkitPackage;
+import org.reactnative.camera.RNCameraPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
+import cl.json.RNSharePackage;
+import com.reactnativenavigation.NavigationReactPackage;
+import com.RNFetchBlob.RNFetchBlobPackage;
+import cl.json.RNSharePackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
@@ -29,6 +37,14 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNSpinkitPackage(),
+            new RNCameraPackage(),
+            new VectorIconsPackage(),
+            new SplashScreenReactPackage(),
+            new RNSharePackage(),
+            new NavigationReactPackage(),
+            new RNFetchBlobPackage(),
+            new RNSharePackage(),
             new SplashScreenReactPackage(),
             new VectorIconsPackage(),
             new VectorIconsPackage(),

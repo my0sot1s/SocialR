@@ -1,18 +1,12 @@
-import { persistReducer } from 'redux-persist'
-import native from 'redux-persist/lib/storage/index.native'
-const setConfig = (key) => {
-    return {
-        key,
-        storage: native,
-        blacklist: [
-            "routing",
-            "nav",
-        ]
-    }
-}
+import { combineReducers } from 'redux'
+import { feedReducers } from '../store/post'
+import { authReducers } from '../store/auth'
+import { usersReducers } from '../store/user'
+import { usersEmotionReducers } from '../store/emotion'
 
-
-export default {
-    // nav: NavReducer,
-    // newsfeed: persistReducer(setConfig(`newsfeed`), getNewsFeed)
-}
+export default combineReducers({
+  feeds: feedReducers,
+  auth: authReducers,
+  user: usersReducers,
+  emotion: usersEmotionReducers
+})

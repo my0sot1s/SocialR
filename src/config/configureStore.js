@@ -2,38 +2,37 @@ import { createStore, applyMiddleware, compose } from 'redux'
 import logger from 'redux-logger'
 import { AsyncStorage } from 'react-native'
 import rootReducer from './configureReducers'
-import storage from 'redux-persist/es/storage/index.native'
-import { persistStore, persistCombineReducers } from 'redux-persist'
 import createSagaMiddleware from 'redux-saga'
 import rootSaga from './configureSaga'
 
-
-const config = {
-    key: 'telomas',
-    storage,
-    blacklist: [
-        "routing",
-        "nav",
-    ],
-    debug: true
+export let GetStorageByKey = async (key) => {
+  if (!key) return {}
+  let ownerInfo = await AsyncStorage.getItem(key)
+  try {
+    return JSON.parse(ownerInfo)
+  } catch (e) {
+    return ownerInfo
+  }
 }
 
-const reducer = persistCombineReducers(config, rootReducer)
+export let SetStorage = async (key, value) => {
+  if (!key || !value) return {}
+  if (typeof value === 'object') {
+    value = JSON.stringify(value)
+  }
+  await AsyncStorage.setItem(key, value)
+}
+
 const sagaMiddleware = createSagaMiddleware()
 const middleware = [sagaMiddleware]
 
 if (__DEV__) {
-    middleware.push(logger)
+  middleware.push(logger)
 }
-let store = createStore(
-    reducer,
-    compose(
-        applyMiddleware(...middleware)
-    )
-);
-
-let persistor = persistStore(store)
-sagaMiddleware.run(rootSaga);
-
-
-export { store, persistor };
+export let store = createStore(
+  rootReducer,
+  compose(
+    applyMiddleware(...middleware)
+  )
+)
+sagaMiddleware.run(rootSaga)

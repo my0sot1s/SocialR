@@ -1,100 +1,122 @@
-import React, { PureComponent } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native'
-import { TabNavigator } from 'react-navigation'
-import Icon from "react-native-vector-icons/Ionicons"
-import InitScreen from '../components/InitScreen'
-import ActionLogs from '../components/ActionLog'
-// import Search from './Search'
-// import ActionLog from './__ActionLog'
-// import BasicInfo from './BasicInfo'
-// import TabBar from '../TabNavigate'
-// import ActionLogs from './ActionLogs'
+import React, { PureComponent } from 'react'
+// import { View, Text, TouchableOpacity } from 'react-native'
+import { TabNavigator, StackNavigator, SwitchNavigator } from 'react-navigation'
+import Icon from 'react-native-vector-icons/Ionicons'
+import Feeds from '../components/Feeds/Feeds'
+import Comment from '../components/Comments/Comment'
+import ActionLogs from '../components/ActionLog/ActionLog'
+import CameraRollView from '../components/Caputue/Capture'
+import Profile from '../components/ProfileInfo'
+import Search from '../components/Search/Search'
+import Login from '../components/Login'
 
-const Default = () => <View></View>
+const tabSettings = {
+  tabBarPosition: 'bottom',
+  // animationEnabled: true,
+  tabBarOptions: {
+    activeTintColor: '#000',
+    showLabel: false,
+    inactiveTintColor: '#e91e63',
+    labelStyle: {
+      fontSize: 12
+    },
+    style: {
+      backgroundColor: '#fff'
+    }
+  }
+}
 const MainTabNavigation = TabNavigator({
   Feeds: {
-    screen: InitScreen,
+    screen: StackNavigator({
+      Main: {
+        screen: Feeds
+      },
+      Comment: {
+        screen: Comment
+      }
+    }),
     navigationOptions: (props) => ({
       tabBarIcon: ({ tintColor }) => (
-        tintColor !== "#000"
-          ? <Icon name="ios-home-outline" size={26} />
-          : <Icon name="ios-home" size={26} />
-      ),
+      tintColor !== '#000'
+        ? <Icon name='ios-home-outline' size={26} />
+        : <Icon name='ios-home' size={26} />
+      )
     })
   },
   Search: {
-    screen: Default,
+    screen: Search,
     navigationOptions: (props) => ({
       tabBarIcon: ({ tintColor }) => (
-        tintColor !== "#000"
-          ? <Icon name="ios-search-outline" size={26} />
-          : <Icon name="ios-search" size={26} />
+      tintColor !== '#000'
+        ? <Icon name='ios-search-outline' size={26} />
+        : <Icon name='ios-search' size={26} />
       ),
       header: null
     })
   },
   Capure: {
-    screen: () => null,
+    screen: CameraRollView,
     navigationOptions: (props) => ({
       tabBarLabel: null,
       tabBarIcon: ({ tintColor }) => (
-        tintColor !== "#000"
-          ? <Icon name="ios-add-outline" size={20}
-            style={{
-              borderWidth: 1,
-              paddingHorizontal: 6,
-              borderRadius: 5
-            }} />
-          : <Icon name="ios-add-outline" size={22}
-            style={{
-              borderWidth: 2,
-              paddingHorizontal: 6,
-              borderRadius: 5
-            }} />
-      ),
+      tintColor !== '#000'
+        ? <Icon name='ios-add-outline' size={20} style={{ borderWidth: 1, paddingHorizontal: 6, borderRadius: 5 }} />
+        : <Icon name='ios-add-outline' size={22} style={{ borderWidth: 2, paddingHorizontal: 6, borderRadius: 5 }} />
+      )
     })
   },
   ActionLog: {
     screen: ActionLogs,
     navigationOptions: (props) => ({
       tabBarIcon: ({ tintColor }) => (
-        tintColor !== "#000"
-          ? <Icon name="ios-heart-outline" size={26} />
-          : <Icon name="ios-heart" size={26} />
-      ),
+      tintColor !== '#000'
+        ? <Icon name='ios-notifications-outline' size={26} />
+        : <Icon name='ios-notifications' size={26} />
+      )
     })
   },
   BasicInfo: {
-    screen: Default,
+    screen: Profile,
     navigationOptions: (props) => ({
       tabBarIcon: ({ tintColor }) => (
-        tintColor !== "#000"
-          ? <Icon name="ios-person-outline" size={26} />
-          : <Icon name="ios-person" size={26} />
-      ),
+      tintColor !== '#000'
+        ? <Icon name='ios-person-outline' size={26} />
+        : <Icon name='ios-person' size={26} />
+      )
     })
+  }
+}, tabSettings)
+
+let AuthStack = StackNavigator({
+  Login: {
+    screen: Login
+  }
+})
+
+let StackNavigate = StackNavigator({
+  MainComponent: {
+    screen: MainTabNavigation,
+    navigationOptions: {
+      header: null
+    }
+  }
+})
+
+let SwitchNavigate = SwitchNavigator(
+  {
+    App: StackNavigate,
+    Auth: AuthStack
   },
-}, {
-    tabBarPosition: 'bottom',
-    // animationEnabled: true,
-    tabBarOptions: {
-      activeTintColor: '#000',
-      showLabel: false,
-      inactiveTintColor: "#e91e63",
-      labelStyle: {
-        fontSize: 12,
-      },
-      style: {
-        backgroundColor: '#fff',
-      },
-    },
-  })
+  {
+    initialRouteName: 'Auth'
+  }
+)
 
 class Home extends PureComponent {
-  render() {
+  render () {
     return (
-      <MainTabNavigation />
-    );
+      <SwitchNavigate />
+    )
   }
 }
 

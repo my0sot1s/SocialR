@@ -1,14 +1,15 @@
 import React, { PureComponent } from 'react';
 import { View, StyleSheet, Image } from 'react-native'
-import { flexCenter } from './themes'
-import Button from './Button'
-import { H3, H4 } from './H'
+import { flexCenter } from './commons/themes'
+import ButtonZ from './commons/Button'
+import { H2, H3, H4 } from './commons/H'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 5,
-    height: 45,
+    paddingTop: 10,
+    height: 54,
     width: "100%",
     justifyContent: "flex-start"
   },
@@ -16,9 +17,9 @@ const styles = StyleSheet.create({
     flexBasis: "15%"
   },
   imageMode: {
-    height: 32,
-    width: 32,
-    borderRadius: 16
+    height: 38,
+    width: 38,
+    borderRadius: 19
   },
   headerText: {
     flexBasis: "70%",
@@ -44,21 +45,22 @@ class CardHeader extends PureComponent {
   render() {
     return (
       <View style={[flexCenter, styles.container]}>
-        <Button style={[flexCenter, styles.imageWrap]}>
+        <ButtonZ style={[flexCenter, styles.imageWrap]}>
           <Image source={{ uri: this.props.data.avatar }}
             style={styles.imageMode}
             resizeMode='cover' />
-        </Button>
+        </ButtonZ>
 
         <View style={[flexCenter, styles.headerText]}>
-          <Button style={[flexCenter, styles.titleName]}>
-            <H3 text={this.props.data.username} style={{ fontWeight: "bold" }} />
-          </Button>
+          <ButtonZ style={[flexCenter, styles.titleName]}>
+            <H2 text={this.props.data.username} style={{ fontWeight: "bold" }} />
+          </ButtonZ>
         </View>
-        <Ionicons name='ios-more' size={23} color='#696969' style={styles.icon} />
+        <Ionicons name='ios-heart-outline' size={25} color='#696969' style={styles.icon} />
       </View>
     );
   }
 }
 
 export default CardHeader;
+

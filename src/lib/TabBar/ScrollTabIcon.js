@@ -24,7 +24,7 @@ export default (props) => {
 
 export const styles = StyleSheet.create({
     tabView: {
-        flex: 1,
+        // flex: 1,
         // padding: 5,
         backgroundColor: 'rgba(0,0,0,0.01)',
         height: '100%'

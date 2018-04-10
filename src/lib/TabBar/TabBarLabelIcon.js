@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Button from '../Button'
-import { H1, H2, H3 } from '../H'
+import Button from '../commons/Button'
+import { H1, H2, H3 } from '../commons/H'
 const borderBottomActived = (borderColor) => (
     {
         borderBottomWidth: 1,

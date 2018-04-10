@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { StyleSheet, Text, View, ViewPropTypes, ScrollView } from 'react-native';
-import Button from '../Button';
-import { theme } from "../themes";
+import Button from '../commons/Button';
+import { theme } from "../commons/themes";
 // import { isIos } from '../../utils/platform'
 
 // const propTypes = {

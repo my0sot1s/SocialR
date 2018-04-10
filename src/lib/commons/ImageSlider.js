@@ -35,11 +35,16 @@ export default class ImageSlider extends PureComponent {
 	numItems = this.props.images.length
 	itemWidth = 8 || (FIXED_BAR_WIDTH / this.numItems) - ((this.numItems - 1) * BAR_SPACE)
 	animVal = new Animated.Value(0)
+	calculateImageSize(imageLink) {
+		return imageLink.replace('/upload/', `/upload/c_scale,w_${deviceWidth * 3}/`)
+	}
 	render() {
-		let ImageListRender = (item) => <Image
-			source={{ uri: item.url }}
-			style={{ width: deviceWidth }}
-		/>
+		let ImageListRender = (item) =>
+			<Image
+				source={{ uri: this.calculateImageSize(item.url) }}
+				style={{ width: deviceWidth }}
+				placeholderColor="#eee"
+			/>
 
 		let barArray = []
 		this.props.images.forEach((image, key) => {
@@ -73,7 +78,7 @@ export default class ImageSlider extends PureComponent {
 			)
 			barArray.push(thisBar)
 		})
-
+		// if (this.props.images.length > 1)
 		return (
 			<View
 				style={styles.container}
@@ -101,5 +106,8 @@ export default class ImageSlider extends PureComponent {
 				</View>
 			</View>
 		)
+		// else return (
+		// 	<ImageListRender url={this.props.images[0]} />
+		// )
 	}
 }

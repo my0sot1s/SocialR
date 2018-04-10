@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { View, Text, FlatList, StyleSheet, Image } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
+import { H2 } from '../lib/commons/H' 
+import AsyncImage from './commons/AsyncImage'
 const styles = StyleSheet.create({
   container: {
     minHeight: 47,
@@ -12,7 +14,7 @@ const styles = StyleSheet.create({
   },
   common: {
     // flex: 1,
-    paddingLeft: 10,
+    paddingLeft: 5,
     flexBasis: '15%'
   },
   tiny: {
@@ -22,7 +24,7 @@ const styles = StyleSheet.create({
   bigger: {
     // flex: 5,
     flexBasis: '78%',
-    paddingRight: 10
+    paddingRight: 5
   },
   bold: {
     fontWeight: 'bold'
@@ -50,7 +52,7 @@ const styles = StyleSheet.create({
     fontSize: 15
   },
   textTime: {
-    fontSize: 12,
+    fontSize: 12.5,
     color: '#a3a3a3',
   },
   lineheight: {
@@ -63,47 +65,66 @@ const styles = StyleSheet.create({
   //   borderRight: 0
   // }
 })
+/*
+
+https://i.imgur.com/UFUGlGnt.jpg
+https://i.imgur.com/PBCuYl6t.jpg
+https://i.imgur.com/Qsv8Hjft.jpg
+https://i.imgur.com/DCbYbzJt.jpg
+
+https://i.imgur.com/sX8txA1t.jpg
+https://i.imgur.com/bIx25r5t.jpg
+https://i.imgur.com/cUWRPkct.jpg
+https://i.imgur.com/fdkkip8t.jpg
+
+https://i.imgur.com/H2j7aTkt.jpg
+https://i.imgur.com/jj3Y7FEt.jpg
+https://i.imgur.com/6yMZLA0t.jpg
+https://i.imgur.com/7TTqKsxt.jpg
+https://i.imgur.com/s8ZMf7Ot.jpg
+*/
+
 class ListViewAvatar extends PureComponent {
   state = {
     items: [
       {
-        link: 'https://i.imgur.com/78EUq7H.jpg', time: '5h ago', notice: 'style of the default tab bars underline'
+        link: 'https://i.imgur.com/UFUGlGnt.jpg', time: '5h ago', notice: 'style of the default tab bars underline'
       },
+      // {
+      //   link: 'https://picsum.photos/50/50/?random',
+      //   time: '5h ago',
+      //   notice: 'style of the default tab bars underline',
+      //   galeries: [
+      //     { link: 'https://picsum.photos/50/50/?random' },
+      //     { link: 'https://picsum.photos/50/50/?random' },
+      //     { link: 'https://picsum.photos/50/50/?random' },
+      //     { link: 'https://picsum.photos/50/50/?random' },
+      //     { link: 'https://picsum.photos/50/50/?random' },
+      //     { link: 'https://picsum.photos/50/50/?random' },
+      //     { link: 'https://picsum.photos/50/50/?random' },
+      //     { link: 'https://picsum.photos/50/50/?random' }
+      //   ]
+      // },
+      { link: 'https://i.imgur.com/PBCuYl6t.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
+      { link: 'https://i.imgur.com/Qsv8Hjft.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
       {
-        link: 'https://i.imgur.com/YjpY8im.jpg',
-        time: '5h ago',
-        notice: 'style of the default tab bars underline',
-        galeries: [
-          { link: 'https://i.imgur.com/78EUq7H.jpg' },
-          { link: 'https://i.imgur.com/oO7ADDS.jpg' },
-          { link: 'https://i.imgur.com/78EUq7H.jpg' },
-          { link: 'https://i.imgur.com/oO7ADDS.jpg' },
-          { link: 'https://i.imgur.com/oO7ADDS.jpg' },
-          { link: 'https://i.imgur.com/oO7ADDS.jpg' },
-          { link: 'https://i.imgur.com/78EUq7H.jpg' },
-          { link: 'https://i.imgur.com/oO7ADDS.jpg' }
-        ]
+        link: 'https://i.imgur.com/DCbYbzJt.jpg', time: '5h ago', notice: 'style of the default tab bars underline'
       },
-      { link: 'https://i.imgur.com/oO7ADDS.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
-      { link: 'https://i.imgur.com/KGhLtYS.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
+      { link: 'https://i.imgur.com/sX8txA1t.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
+      { link: 'https://i.imgur.com/cUWRPkct.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
+      { link: 'https://i.imgur.com/fdkkip8t.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
       {
-        link: 'https://i.imgur.com/78EUq7H.jpg', time: '5h ago', notice: 'style of the default tab bars underline'
+        link: 'https://i.imgur.com/H2j7aTkt.jpg', time: '5h ago', notice: 'style of the default tab bars underline'
       },
-      { link: 'https://i.imgur.com/YjpY8im.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
-      { link: 'https://i.imgur.com/oO7ADDS.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
-      { link: 'https://i.imgur.com/KGhLtYS.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
+      { link: 'https://i.imgur.com/jj3Y7FEt.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
+      { link: 'https://i.imgur.com/6yMZLA0t.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
+      { link: 'https://i.imgur.com/7TTqKsxt.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
       {
-        link: 'https://i.imgur.com/78EUq7H.jpg', time: '5h ago', notice: 'style of the default tab bars underline'
-      },
-      { link: 'https://i.imgur.com/YjpY8im.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
-      { link: 'https://i.imgur.com/oO7ADDS.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
-      { link: 'https://i.imgur.com/KGhLtYS.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
-      {
-        link: 'https://i.imgur.com/78EUq7H.jpg', time: '5h ago', notice: 'style of the default tab bars underline'
-      },
-      { link: 'https://i.imgur.com/YjpY8im.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
-      { link: 'https://i.imgur.com/oO7ADDS.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
-      { link: 'https://i.imgur.com/KGhLtYS.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
+        link: 'https://i.imgur.com/s8ZMf7Ot.jpg', time: '5h ago', notice: 'style of the default tab bars underline'
+      }
+      // { link: 'https://picsum.photos/50/50/?random', time: '5h ago', notice: 'style of the default tab bars underline' },
+      // { link: 'https://picsum.photos/50/50/?random', time: '5h ago', notice: 'style of the default tab bars underline' },
+      // { link: 'https://picsum.photos/50/50/?random', time: '5h ago', notice: 'style of the default tab bars underline' },
     ],
   }
   render() {
@@ -116,7 +137,8 @@ class ListViewAvatar extends PureComponent {
           style={[styles.container, { flexWrap: 'wrap' }]}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) =>
-            <Image source={{ uri: item.link }}
+            <AsyncImage
+              source={{ uri: item.link }}
               style={styles.galeryMode}
               resizeMode='cover' />} />
       return <View />
@@ -125,14 +147,17 @@ class ListViewAvatar extends PureComponent {
       let renderAvatar
       switch (this.props.type) {
         case 'block':
-          renderAvatar = <Image source={{ uri: data.link }}
+          renderAvatar = <AsyncImage
+            source={{ uri: data.link }}
             resizeMode='cover' style={styles.blockMode} />
           break
         case 'round':
-        default:
-          renderAvatar = <Image source={{ uri: data.link }}
+          renderAvatar = <AsyncImage
+            source={{ uri: data.link }}
             resizeMode='cover' style={styles.roundMode} />
           break;
+        default:
+        renderAvatar = <View style={styles.roundMode} ><H2 text="#" /></View>
       }
       return <View style={[styles.container, styles.lineheight]}>
         <View style={[styles.container, styles.common]}>
