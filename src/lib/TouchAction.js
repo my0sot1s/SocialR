@@ -56,24 +56,24 @@ class TouchAction extends PureComponent {
     Share.open(this.shareOptions);
   }
   sendToComment() {
-    this.props.navigation.navigate('Comment')
+    this.props.navigation.navigate('Comment', { pid: this.props.pid })
   }
   render() {
     let tag = ''
     objectPath.get(this.props, 'tags', []).forEach(v => {
       tag += ` #${v} `
     })
-    let iconDefined = ['ios-quote-outline','ios-send-outline','ios-bookmark-outline']
-    let eventDefined = [this.sendToComment.bind(this),this.Shared.bind(this),this.Shared.bind(this)]
+    let iconDefined = ['ios-quote-outline', 'ios-send-outline', 'ios-bookmark-outline']
+    let eventDefined = [this.sendToComment.bind(this), this.Shared.bind(this), this.Shared.bind(this)]
     return (
       <View style={[styles.container, { flexDirection: 'column', height: 75, marginTop: 3 }]}>
         <View style={styles.container}>
-          {iconDefined.map((icon,index) =>
-          <View style={[styles.common, styles.container, { flexBasis: '30%' }]} key={index}>
-            <ZButton onPress={eventDefined[index]}>
-              <Icon name={icon} size={30} style={styles.bold} />
-            </ZButton>
-          </View>)}
+          {iconDefined.map((icon, index) =>
+            <View style={[styles.common, styles.container, { flexBasis: '30%' }]} key={index}>
+              <ZButton onPress={eventDefined[index]}>
+                <Icon name={icon} size={30} style={styles.bold} />
+              </ZButton>
+            </View>)}
           {/* <View style={[styles.common, styles.container, { flexBasis: '30%' }]}>
             <ZButton onPress={} >
               <Icon name={"ios-send-outline"} size={33} style={styles.bold} />

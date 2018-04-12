@@ -1,8 +1,11 @@
 import React, { PureComponent } from 'react';
 import { View, Text, FlatList, StyleSheet, Image } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
-import { H2 } from '../lib/commons/H' 
+import { H2, H3 } from '../lib/commons/H'
+import { timeSince } from '../utils/func'
 import AsyncImage from './commons/AsyncImage'
+const objectPath = require('object-path')
+
 const styles = StyleSheet.create({
   container: {
     minHeight: 47,
@@ -49,7 +52,7 @@ const styles = StyleSheet.create({
     // borderRadius: 20
   },
   textStyle: {
-    fontSize: 15
+    fontSize: 14
   },
   textTime: {
     fontSize: 12.5,
@@ -58,12 +61,6 @@ const styles = StyleSheet.create({
   lineheight: {
     marginVertical: 5
   },
-  // borderSet: {
-  //   borderWidth: 1,
-  //   borderColor: '#dbdbdb',
-  //   borderLeft: 0,
-  //   borderRight: 0
-  // }
 })
 /*
 
@@ -90,21 +87,6 @@ class ListViewAvatar extends PureComponent {
       {
         link: 'https://i.imgur.com/UFUGlGnt.jpg', time: '5h ago', notice: 'style of the default tab bars underline'
       },
-      // {
-      //   link: 'https://picsum.photos/50/50/?random',
-      //   time: '5h ago',
-      //   notice: 'style of the default tab bars underline',
-      //   galeries: [
-      //     { link: 'https://picsum.photos/50/50/?random' },
-      //     { link: 'https://picsum.photos/50/50/?random' },
-      //     { link: 'https://picsum.photos/50/50/?random' },
-      //     { link: 'https://picsum.photos/50/50/?random' },
-      //     { link: 'https://picsum.photos/50/50/?random' },
-      //     { link: 'https://picsum.photos/50/50/?random' },
-      //     { link: 'https://picsum.photos/50/50/?random' },
-      //     { link: 'https://picsum.photos/50/50/?random' }
-      //   ]
-      // },
       { link: 'https://i.imgur.com/PBCuYl6t.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
       { link: 'https://i.imgur.com/Qsv8Hjft.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
       {
@@ -122,9 +104,6 @@ class ListViewAvatar extends PureComponent {
       {
         link: 'https://i.imgur.com/s8ZMf7Ot.jpg', time: '5h ago', notice: 'style of the default tab bars underline'
       }
-      // { link: 'https://picsum.photos/50/50/?random', time: '5h ago', notice: 'style of the default tab bars underline' },
-      // { link: 'https://picsum.photos/50/50/?random', time: '5h ago', notice: 'style of the default tab bars underline' },
-      // { link: 'https://picsum.photos/50/50/?random', time: '5h ago', notice: 'style of the default tab bars underline' },
     ],
   }
   render() {
@@ -157,7 +136,7 @@ class ListViewAvatar extends PureComponent {
             resizeMode='cover' style={styles.roundMode} />
           break;
         default:
-        renderAvatar = <View style={styles.roundMode} ><H2 text="#" /></View>
+          renderAvatar = <View style={styles.roundMode} ><H2 text="#" /></View>
       }
       return <View style={[styles.container, styles.lineheight]}>
         <View style={[styles.container, styles.common]}>
@@ -170,7 +149,7 @@ class ListViewAvatar extends PureComponent {
         <View style={[styles.container, styles.tiny]}>
           <Icon name={'ios-information-outline'} size={22} />
         </View>
-      </View >
+      </View>
     }
     return (
       <View>
@@ -186,4 +165,55 @@ class ListViewAvatar extends PureComponent {
   }
 }
 
+// TimeAgo.locale(en)
+// const timeAgo = new TimeAgo('en-US')
+export class SimpleTableView extends PureComponent {
+  state = {}
+
+  render() {
+    let ListItem = (data) => {
+      let { users } = this.props
+      debugger
+      let renderUsers = (uid) => {
+        return users.find(u => u.id === uid)
+      }
+      let avatar = objectPath.get(renderUsers(data.user_id), 'avatar', '')
+      let renderAvatar
+      if (!avatar) {
+        renderAvatar = <View></View>
+      } else {
+        renderAvatar = <AsyncImage
+          source={{ uri: avatar }}
+          resizeMode='cover' style={styles.roundMode} />
+      }
+      return (
+        <View style={[styles.container, styles.lineheight]}>
+          <View style={[styles.container, styles.common, { alignItems: 'flex-start' }]}>
+            {renderAvatar}
+          </View>
+          <View style={[styles.container, styles.bigger, { flexDirection: 'column' }]}>
+            <Text style={styles.textStyle}>{data.text}
+              <Icon name="md-arrow-dropright" size={22} color={'#a3a3a3'} />
+              <Text style={styles.textTime}>  {timeSince(new Date(data.created))}</Text>
+            </Text>
+
+          </View>
+          <View style={[styles.container, styles.tiny]}>
+            <Icon name="ios-information-outline" size={22} />
+          </View>
+        </View>
+      )
+    }
+    return (
+      <View style={{ flex: 1 }}>
+        <FlatList
+          data={this.props.comments}
+          extraData={this.state}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => ListItem(item)} />
+      </View >
+    );
+  }
+}
 export default ListViewAvatar;

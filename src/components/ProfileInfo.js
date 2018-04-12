@@ -11,7 +11,7 @@ class ProfileInfo extends PureComponent {
         <Profile
           avatar={"http://res.cloudinary.com/telosma/image/upload/t_media_lib_thumb/v1511028325/%40hoaitt_33/common/omgdczudzgywa3llotjq.jpg"} />
       </View >
-    );
+    )
   }
 }
 

@@ -44,39 +44,50 @@ class Login extends Component {
   changePassword(pw) {
     this.setState(prevState => ({ password: pw }))
   }
+  // renderTop () {
+  //   return (
+
+  //   )
+  // }
   render() {
     return (
-      <KeyboardAwareScrollView>
-        <View style={{ flex: 1, marginTop: 20, marginHorizontal: 20 }}>
+      <KeyboardAwareScrollView style={{ backgroundColor: "#fff" }}>
+        <View style={{ flex: 1, marginTop: 20, marginHorizontal: 20, backgroundColor: '#fff' }}>
           <H1 text="LOGIN FORM"
             style={{
               textAlign: 'center',
               marginBottom: 20,
               color: '#aaa',
-              fontFamily: 'Chalkboard SE'
+              fontWeight: 'normal',
+              fontFamily: 'Kailasa'
             }} />
-          <Image source={require('./login_top.png')} style={{
+          <Image source={require('./login_top.jpg')} style={{
             width: width - 40,
             height: 120,
             marginBottom: 20
           }} resizeMode="cover" />
-          <H2 text="UserName:" style={{
+          <H3 text={"UserName:".toUpperCase()} style={{
             marginVertical: 10,
-            color: '#ccc'
+            color: '#ccc',
+            fontFamily: 'Helvetica'
           }} />
           <EditTextHighlight onChangeText={this.changeUsername.bind(this)}
             value={this.state.username}
           />
-          <H2 text="Password:" style={{
+          <H3 text={"Password:".toUpperCase()} style={{
             marginVertical: 10,
-            color: '#ccc'
+            color: '#ccc',
+            fontFamily: 'Helvetica'
           }} />
-          <EditTextHighlight secureTextEntry onChangeText={this.changeUsername.bind(this)}
+          <EditTextHighlight secureTextEntry onChangeText={this.changePassword.bind(this)}
             value={this.state.password}
           />
           <Button onPress={this.loginToApp.bind(this)}
             style={{ backgroundColor: '#3097d2', marginTop: 30 }}>
-            <H2 text="Login" style={{ color: '#fff', paddingVertical: 15 }} />
+            <H3 text={"Login".toUpperCase()} style={{
+              color: '#fff', paddingVertical: 15,
+              fontFamily: 'Helvetica'
+            }} />
           </Button>
         </View>
       </KeyboardAwareScrollView>

@@ -37,9 +37,9 @@ const MainTabNavigation = TabNavigator({
     }),
     navigationOptions: (props) => ({
       tabBarIcon: ({ tintColor }) => (
-      tintColor !== '#000'
-        ? <Icon name='ios-home-outline' size={26} />
-        : <Icon name='ios-home' size={26} />
+        tintColor !== '#000'
+          ? <Icon name='ios-home-outline' size={26} />
+          : <Icon name='ios-home' size={26} />
       )
     })
   },
@@ -47,9 +47,9 @@ const MainTabNavigation = TabNavigator({
     screen: Search,
     navigationOptions: (props) => ({
       tabBarIcon: ({ tintColor }) => (
-      tintColor !== '#000'
-        ? <Icon name='ios-search-outline' size={26} />
-        : <Icon name='ios-search' size={26} />
+        tintColor !== '#000'
+          ? <Icon name='ios-search-outline' size={26} />
+          : <Icon name='ios-search' size={26} />
       ),
       header: null
     })
@@ -59,9 +59,9 @@ const MainTabNavigation = TabNavigator({
     navigationOptions: (props) => ({
       tabBarLabel: null,
       tabBarIcon: ({ tintColor }) => (
-      tintColor !== '#000'
-        ? <Icon name='ios-add-outline' size={20} style={{ borderWidth: 1, paddingHorizontal: 6, borderRadius: 5 }} />
-        : <Icon name='ios-add-outline' size={22} style={{ borderWidth: 2, paddingHorizontal: 6, borderRadius: 5 }} />
+        tintColor !== '#000'
+          ? <Icon name='ios-add-outline' size={20} style={{ borderWidth: 1, paddingHorizontal: 6, borderRadius: 5 }} />
+          : <Icon name='ios-add-outline' size={22} style={{ borderWidth: 2, paddingHorizontal: 6, borderRadius: 5 }} />
       )
     })
   },
@@ -69,9 +69,9 @@ const MainTabNavigation = TabNavigator({
     screen: ActionLogs,
     navigationOptions: (props) => ({
       tabBarIcon: ({ tintColor }) => (
-      tintColor !== '#000'
-        ? <Icon name='ios-notifications-outline' size={26} />
-        : <Icon name='ios-notifications' size={26} />
+        tintColor !== '#000'
+          ? <Icon name='ios-notifications-outline' size={26} />
+          : <Icon name='ios-notifications' size={26} />
       )
     })
   },
@@ -79,9 +79,9 @@ const MainTabNavigation = TabNavigator({
     screen: Profile,
     navigationOptions: (props) => ({
       tabBarIcon: ({ tintColor }) => (
-      tintColor !== '#000'
-        ? <Icon name='ios-person-outline' size={26} />
-        : <Icon name='ios-person' size={26} />
+        tintColor !== '#000'
+          ? <Icon name='ios-person-outline' size={26} />
+          : <Icon name='ios-person' size={26} />
       )
     })
   }
@@ -113,7 +113,7 @@ let SwitchNavigate = SwitchNavigator(
 )
 
 class Home extends PureComponent {
-  render () {
+  render() {
     return (
       <SwitchNavigate />
     )

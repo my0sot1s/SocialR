@@ -29,7 +29,7 @@ export function* startFetchEmotions({ uid }) {
     // let checkuser = yield select(findUser(uid))
     // if (checkuser) return
     const json = yield call(fetchEmotions, uid)
-    let listUid = Object.keys(json)
+    let listUid = Object.keys(objectPath.get(json, 'emotions')) || []
     let listUser = uniq(listUid)
     yield all([
       put({
@@ -48,7 +48,7 @@ export const usersEmotionReducers = (state = initState, { type, data, error }) =
     case FETCH_EMOTION_SUCCESS:
       return {
         ...state,
-        emotions: {...state.emotions, ...data.emotions}
+        emotions: { ...state.emotions, ...data.emotions }
       }
     case FETCH_EMOTION_FALURE:
       return {

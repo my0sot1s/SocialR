@@ -11,10 +11,10 @@ export const FETCH_POST_SUCCESSFUL = 'FETCH_POST_SUCCESSFUL'
 export const FETCH_POST_FALURE = 'FETCH_POST_FALURE'
 export const CLEAR_AND_REFRESH = 'CLEAR_AND_REFRESH'
 export const DO_CLEAR_AND_REFRESH = 'DO_CLEAR_AND_REFRESH'
-const uniq = require('lodash/uniq')
+
 const objectPath = require('object-path')
 const initState = {
-  limit: 3,
+  limit: -3,
   posts: [],
   anchor: '',
   // postFetching: false,
@@ -49,11 +49,11 @@ export function* fetchFeeds() {
     let listUid = json.posts.map(v => {
       return v.user_id
     })
-    let listUsers = uniq(listUid)
+
     yield all([
       put({
         type: FETCH_MULTIPLE_USER,
-        listUsers
+        listUsers: listUid
       }),
       put({
         type: FETCH_POST_SUCCESSFUL,
@@ -75,7 +75,7 @@ export const feedReducers = (state = initState, { type, data, error }) => {
         ...state,
         posts: [...state.posts, ...objectPath.get(data, 'posts', [])],
         anchor: data.anchor,
-        locked: data.posts.length < state.limit
+        locked: objectPath.get(data, 'posts', []).length < Math.abs(state.limit)
       }
     case FETCH_POST_FALURE:
       return {

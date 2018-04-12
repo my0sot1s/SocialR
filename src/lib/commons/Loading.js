@@ -1,17 +1,13 @@
 import React, { Component } from 'react'
-import {
-  StyleSheet,
-  Dimensions,
-  View
-} from 'react-native'
+import { StyleSheet, Dimensions, View } from 'react-native'
 var Spinner = require('react-native-spinkit')
 let { height } = Dimensions.get('window')
 export default class Loading extends Component {
-  render() {
+  render () {
     return (
-      <View style={[styles.container, styles.horizontal]}>
+      <View style={[styles.container, styles.horizontal, {backgroundColor: '#efeff4'}]}>
         <Spinner
-          type={"Circle"}
+          type='Circle'
           color={'#42c8f4'}
           size={80}
           style={{ marginTop: height / 2 - 40 }} />

@@ -9,14 +9,23 @@ import SlideHeader from '../../lib/SlideHeader'
 import ImageSlider from '../../lib/commons/ImageSlider'
 import BottomLoader from '../../lib/commons/BottomLoader'
 import TouchAction from '../../lib/TouchAction'
-import ListCircleAction from '../../lib/CircleList'
+import Emotions from './Emotion'
 import { connect } from 'react-redux'
 const { height, width } = Dimensions.get('screen')
-import { fetchFeedAll, clearAllOldFeedFromStore, 
+import {
+  fetchFeedAll, clearAllOldFeedFromStore,
   getAllPosts,
-  getCurrentLock } from '../../store/post'
+  getCurrentLock
+} from '../../store/post'
 import { getUsers } from '../../store/user'
+import { getUsersEmotion, fetchUserEmotion } from '../../store/emotion'
+import { getOwnerID } from '../../store/auth'
+
 const objectPath = require('object-path')
+
+const sleep = async (ms) => {
+  await setTimeout(() => { }, ms)
+}
 
 class InitScreen extends PureComponent {
 
@@ -24,12 +33,16 @@ class InitScreen extends PureComponent {
     isRefreshing: false,
     isFetching: false
   }
-  static navigationOptions= {
+  static navigationOptions = {
     header: null
   }
+
   async componentDidMount() {
     this.setState({ isFetching: true })
+    // await Promise.all([
     await this.props.fetchFeedAll()
+    // await sleep(300)
+    await this.props.fetchUserEmotion(this.props.uid)
   }
   // componentWillReceiveProps(nextProps) {
   //   let feedPost = objectPath.get(this.state, 'postsList.posts', [])
@@ -51,12 +64,12 @@ class InitScreen extends PureComponent {
       await this.props.fetchFeedAll()
   }
   ImageRender = (data, users) => <View>
-      <SlideHeader data={users.find(u => u.id === data.user_id)} />
-      <ImageSlider
-        images={data.media}
-        style={{ width: 100 + '%', height: 300 }} />
-      <TouchAction text={data.text} tags={data.tags} {...this.props}/>
-    </View>
+    <SlideHeader data={users.find(u => u.id === data.user_id)} />
+    <ImageSlider
+      images={data.media}
+      style={{ width: 100 + '%', height: 300 }} />
+    <TouchAction text={data.text} tags={data.tags} {...this.props} pid={data.id} />
+  </View>
 
   RefreshControl = () => <RefreshControl
     refreshing={this.state.isRefreshing}
@@ -72,12 +85,13 @@ class InitScreen extends PureComponent {
     return <View />
   }
   render() {
-    let { feeds, users } = this.props
+    let { feeds, users, emotions } = this.props
     if (feeds.length === 0 || users.length === 0) return <Loading />
     return (
       <View style={styles.mainContent}>
+
         <FlatList
-          ListHeaderComponent={() => <ListCircleAction data={mock} />}
+          ListHeaderComponent={() => <Emotions emotions={emotions} />}
           data={feeds}
           scrollEventThrottle={16}
           keyExtractor={(item, index) => index.toString()}
@@ -95,13 +109,16 @@ let mapStateToProps = (state) => {
   return {
     feeds: getAllPosts(state),
     users: getUsers(state),
-    locked: getCurrentLock(state)
+    locked: getCurrentLock(state),
+    emotions: getUsersEmotion(state),
+    uid: getOwnerID(state)
   }
 }
 
 export default connect(mapStateToProps, {
   fetchFeedAll,
-  clearAllOldFeedFromStore
+  clearAllOldFeedFromStore,
+  fetchUserEmotion
 })(InitScreen)
 
 const styles = StyleSheet.create({

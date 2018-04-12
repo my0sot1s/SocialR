@@ -1,6 +1,7 @@
 import {
   call,
   takeLatest,
+  takeEvery,
   put,
   select
 } from 'redux-saga/effects'
@@ -12,17 +13,19 @@ export const FETCH_MULTIPLE_USER = 'FETCH_MULTIPLE_USER'
 export const FETCH_MULTIPLE_USER_SUCCESS = 'FETCH_MULTIPLE_USER_SUCCESS'
 export const FETCH_MULTIPLE_USER_FAILURE = 'FETCH_MULTIPLE_USER_FAILURE'
 const objectPath = require('object-path')
+const uniq = require('lodash/uniq')
+const uniqBy = require('lodash/uniqBy')
 const initState = {
   users: [],
   error: null
 }
 
 export function* watchFetchUser() {
-  yield takeLatest(FETCH_USER, startFetchUser)
+  yield takeEvery(FETCH_USER, startFetchUser)
 }
 
 export function* watchFetchMultipleUsers() {
-  yield takeLatest(FETCH_MULTIPLE_USER, startFetchMultipleUsers)
+  yield takeEvery(FETCH_MULTIPLE_USER, startFetchMultipleUsers)
 }
 
 export function* startFetchUser({ uid }) {
@@ -38,8 +41,10 @@ export function* startFetchUser({ uid }) {
 
 export function* startFetchMultipleUsers({ listUsers }) {
   try {
+    listUsers = uniq(listUsers)
     // remove user exist on list
-    let users = yield select(getUsers)
+    let users = yield select(getUsers) || []
+    if (!listUsers || !Array.isArray(listUsers)) return
     let listUsersNotExisted = listUsers.filter(u => {
       let isExist = users.some(usr => usr.id === u)
       if (!isExist) return u
@@ -63,9 +68,10 @@ export const usersReducers = (state = initState, { type, data, error }) => {
         ...state, error: data
       }
     case FETCH_MULTIPLE_USER_SUCCESS:
+      let userClone = uniqBy([...state.users, ...objectPath.get(data, 'users', [])], 'id')
       return {
         ...state,
-        users: [...state.users, ...objectPath.get(data, 'users', [])]
+        users: userClone
       }
     case FETCH_MULTIPLE_USER_FAILURE:
       return {
