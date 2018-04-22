@@ -9,7 +9,7 @@ const btnStyle = {
 export default class Button extends React.PureComponent {
 
   constructor() {
-    super();
+    super()
     this.handlePressButton = this.handlePressButton.bind(this)
   }
 

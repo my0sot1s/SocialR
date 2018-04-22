@@ -6,6 +6,7 @@ import {
   select
 } from 'redux-saga/effects'
 import { fetchUserById, fetchUserByIDs } from '../api/user'
+import { getOwner } from './auth'
 export const FETCH_USER = 'FETCH_USER'
 export const FETCH_USER_SUCCESS = 'FETCH_USER_SUCCESS'
 export const FETCH_USER_FALURE = 'FETCH_USER_FALURE'
@@ -104,5 +105,9 @@ export const getUsers = state => {
   return state.user.users
 }
 export const findUser = state => uid => {
-  return state.user.users.find(u => u.id === uid)
+  let user = state.user.users.find(u => u.id === uid)
+  if (!user && uid === getOwner(state).id) {
+    return getOwner(state)
+  }
+  return user
 }

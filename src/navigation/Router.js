@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-// import { View, Text, TouchableOpacity } from 'react-native'
+import { View, StatusBar } from 'react-native'
 import { TabNavigator, StackNavigator, SwitchNavigator } from 'react-navigation'
 import Icon from 'react-native-vector-icons/Ionicons'
 import Feeds from '../components/Feeds/Feeds'
@@ -9,6 +9,8 @@ import CameraRollView from '../components/Caputue/Capture'
 import Profile from '../components/ProfileInfo'
 import Search from '../components/Search/Search'
 import Login from '../components/Login'
+import Explore from '../components/Search/ExploresView'
+import UploadPost from '../components/Caputue/UploadPost'
 
 const tabSettings = {
   tabBarPosition: 'bottom',
@@ -32,36 +34,59 @@ const MainTabNavigation = TabNavigator({
         screen: Feeds
       },
       Comment: {
-        screen: Comment
+        screen: Comment,
+        navigationOptions: {
+          tabBarVisible: false
+        }
       }
     }),
     navigationOptions: (props) => ({
       tabBarIcon: ({ tintColor }) => (
         tintColor !== '#000'
-          ? <Icon name='ios-home-outline' size={26} />
-          : <Icon name='ios-home' size={26} />
+          ? <Icon name='ios-home-outline' size={28} />
+          : <Icon name='ios-home' size={30} />
       )
     })
   },
   Search: {
-    screen: Search,
+    screen: StackNavigator({
+      MainSearch: {
+        screen: Search
+      },
+      Explore: {
+        screen: Explore
+      }
+    }),
     navigationOptions: (props) => ({
       tabBarIcon: ({ tintColor }) => (
         tintColor !== '#000'
-          ? <Icon name='ios-search-outline' size={26} />
-          : <Icon name='ios-search' size={26} />
+          ? <Icon name='ios-search-outline' size={28} />
+          : <Icon name='ios-search' size={30} />
       ),
       header: null
     })
   },
   Capure: {
-    screen: CameraRollView,
+    screen: StackNavigator({
+      MainCameraRollView: {
+        screen: CameraRollView,
+        navigationOptions: {
+          tabBarVisible: false
+        }
+      },
+      Upload: {
+        screen: UploadPost,
+        navigationOptions: {
+          tabBarVisible: false
+        }
+      }
+    }),
     navigationOptions: (props) => ({
       tabBarLabel: null,
       tabBarIcon: ({ tintColor }) => (
         tintColor !== '#000'
-          ? <Icon name='ios-add-outline' size={20} style={{ borderWidth: 1, paddingHorizontal: 6, borderRadius: 5 }} />
-          : <Icon name='ios-add-outline' size={22} style={{ borderWidth: 2, paddingHorizontal: 6, borderRadius: 5 }} />
+          ? <Icon name='ios-add-outline' size={25} style={{ borderWidth: 1, paddingHorizontal: 6, borderRadius: 5 }} />
+          : <Icon name='ios-add-outline' size={27} style={{ borderWidth: 2, paddingHorizontal: 6, borderRadius: 5 }} />
       )
     })
   },
@@ -70,8 +95,8 @@ const MainTabNavigation = TabNavigator({
     navigationOptions: (props) => ({
       tabBarIcon: ({ tintColor }) => (
         tintColor !== '#000'
-          ? <Icon name='ios-notifications-outline' size={26} />
-          : <Icon name='ios-notifications' size={26} />
+          ? <Icon name='ios-notifications-outline' size={28} />
+          : <Icon name='ios-notifications' size={28} />
       )
     })
   },
@@ -115,7 +140,14 @@ let SwitchNavigate = SwitchNavigator(
 class Home extends PureComponent {
   render() {
     return (
-      <SwitchNavigate />
+      <View style={{ flex: 1 }}>
+        <StatusBar
+          translucent={true}
+          backgroundColor={'rgba(0, 0, 0, 0.3)'}
+          barStyle={'light-content'}
+        />
+        <SwitchNavigate />
+      </View>
     )
   }
 }

@@ -5,6 +5,8 @@ import Button from '../commons/Button'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { flexCenter } from '../commons/themes'
 import ModalShow from './ModalShow'
+import { resizeImageByWidth } from '../../utils/func'
+import CircleImage from '../commons/CircleImage'
 let { height, width } = Dimensions.get('window')
 const objectPath = require('object-path')
 const styles = StyleSheet.create({
@@ -16,9 +18,9 @@ const styles = StyleSheet.create({
     position: 'relative'
   },
   imageDim: {
-    height: 58,
-    width: 58,
-    borderRadius: 29
+    height: 62,
+    width: 62,
+    borderRadius: 31
   },
   imgAva: {
     zIndex: 1001, position: 'absolute',
@@ -47,31 +49,31 @@ const styles = StyleSheet.create({
 class ListItem extends PureComponent {
   renderAddButton(props) {
     // get first
-    let firstMedia = objectPath.get(props, '0', [])
+    let firstMedia = objectPath.get(props, '0.media.0', [])
     if (objectPath.get(firstMedia, 'public_id') !== 'add-button') {
       return (
-        <Button onPress={() => this.props.onClick(firstMedia)} style={{ padding: 0, margin: 0 }}>
-          <Image source={{ uri: firstMedia.url }} resizeMode='cover'
-            style={styles.imageDim} />
+        <Button onPress={() => this.props.onClick(props)} style={{ padding: 0, margin: 0 }}>
+          <CircleImage source={{ uri: resizeImageByWidth(firstMedia.url, width / 4) }}
+            resizeMode='cover'
+            size={62} />
         </Button>
       )
     }
-    return <View style={[styles.imageDim, flexCenter, { borderColor: '#eee', borderWidth: 1 }]} >
-      <Icon name='ios-add' size={60} color='#42c8f4' />
-    </View>
+    return (
+      <Button onPress={() => this.props.onClick(props)} style={styles.imageDim}>
+        <View style={[styles.imageDim, flexCenter, { borderColor: '#eee', borderWidth: 1 }]} >
+          <Icon name='ios-add' size={30} color='#42c8f4' />
+        </View>
+      </Button>
+    )
   }
   render() {
-    let { media, by } = this.props
+    let { media } = this.props
     if (media) {
       return (
         <View>
           <Button style={styles.mainList}>
             {this.renderAddButton(media)}
-            <View style={[styles.imgAva]}>
-              <View style={[flexCenter, styles.imgWrapper]}>
-                <View style={styles.round}></View>
-              </View>
-            </View>
           </Button>
         </View>
       )
@@ -88,22 +90,31 @@ class ListCircle extends PureComponent {
     this.onPressEmotions = this.onPressEmotions.bind(this)
   }
   state = {
-    timeOut: 4000,
+    timeOut: 50 * 1000,
     isShowModal: false,
-    mediaShow: {}
+    mediaShow: []
   }
-  onPressEmotions(firstMedia) {
-    this.setState({ isShowModal: true, mediaShow: firstMedia })
-
+  onPressEmotions(mediaShow) {
+    let firstMedia = objectPath.get(mediaShow, '0.media.0', {})
+    if (firstMedia.public_id === 'add-button' && firstMedia.url === 'ios-add-outline') {
+      this.props.clickChooseImage()
+      return
+    }
+    this.setState({ isShowModal: true, mediaShow: mediaShow })
     setTimeout(() => {
-      this.setState({ isShowModal: false, mediaShow: {} })
+      this.setState({ isShowModal: false, mediaShow: [] })
     }, this.state.timeOut)
   }
   renderRow(row) {
-    let _row = objectPath.get(row, '0')
     return (
-      <ListItem by={_row.by} media={_row.media} onClick={this.onPressEmotions} />
+      <ListItem media={row}
+        onClick={this.onPressEmotions.bind(this)} />
     )
+  }
+  emitHanderClose() {
+    this.setState({
+      isShowModal: false
+    })
   }
   render() {
     let addButton = [{
@@ -114,7 +125,10 @@ class ListCircle extends PureComponent {
     let vals = Object.values(data || {}) || []
     let emotions = [addButton, ...vals]
     return (
-      <View style={{ height: 70, backgroundColor: '#fff', borderColor: '#eee', borderBottomWidth: 1 }}>
+      <View style={{
+        height: 74, backgroundColor: '#fff',
+        borderColor: '#eee', borderBottomWidth: 1
+      }}>
         <FlatList
           data={emotions}
           extraData={this.state}
@@ -125,7 +139,8 @@ class ListCircle extends PureComponent {
           renderItem={({ item }) => this.renderRow(item)} />
         <ModalShow
           isVisible={this.state.isShowModal}
-          mediaShow={this.state.mediaShow} />
+          mediaShow={this.state.mediaShow}
+          emitHandlerClose={this.emitHanderClose.bind(this)} />
       </View>
     )
   }

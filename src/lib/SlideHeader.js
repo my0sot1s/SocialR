@@ -4,6 +4,7 @@ import { flexCenter } from './commons/themes'
 import ButtonZ from './commons/Button'
 import { H2, H3, H4 } from './commons/H'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import CircleImage from './commons/CircleImage'
 const objectPath = require('object-path')
 
 const styles = StyleSheet.create({
@@ -42,19 +43,24 @@ const styles = StyleSheet.create({
   }
 })
 class CardHeader extends PureComponent {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.renderAvatar = this.renderAvatar.bind(this)
   }
-  renderAvatar () {
+  renderAvatar() {
     if (objectPath.get(this.props.data, 'avatar')) {
-      return (<Image source={{ uri: this.props.data.avatar }} style={styles.imageMode} resizeMode='cover' />)
+      return (<CircleImage
+        source={{ uri: this.props.data.avatar }}
+        size={34}
+        resizeMode='cover' />)
     }
     return (
-      <Image source={require('../assets/default-avatar.png')} style={styles.imageMode} resizeMode='cover' />
+      <Image source={require('../assets/default-avatar.png')}
+        style={styles.imageMode} resizeMode='cover' />
     )
   }
-  render () {
+  render() {
+    let { isliked } = this.props
     return (
       <View style={[flexCenter, styles.container]}>
         <ButtonZ style={[flexCenter, styles.imageWrap]}>
@@ -66,9 +72,9 @@ class CardHeader extends PureComponent {
           </ButtonZ>
         </View>
         <Ionicons
-          name='ios-heart-outline'
-          size={25}
-          color='#696969'
+          name={isliked ? 'ios-heart' : 'ios-heart-outline'}
+          size={30}
+          color={isliked ? '#f44295' : '#696969'}
           style={styles.icon} />
       </View>
     )

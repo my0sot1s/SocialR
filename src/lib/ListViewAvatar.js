@@ -1,18 +1,22 @@
 import React, { PureComponent } from 'react';
-import { View, Text, FlatList, StyleSheet, Image } from 'react-native'
+import {
+  View, Text, FlatList,
+  StyleSheet, Image, Dimensions
+} from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { H2, H3 } from '../lib/commons/H'
-import { timeSince } from '../utils/func'
+import { timeSince, resizeImageByWidth } from '../utils/func'
 import AsyncImage from './commons/AsyncImage'
+import CircleImage from './commons/CircleImage'
 const objectPath = require('object-path')
-
+const { width } = Dimensions.get('screen')
 const styles = StyleSheet.create({
   container: {
     minHeight: 47,
     width: '100%',
     display: "flex",
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flexDirection: 'row'
   },
   common: {
@@ -27,15 +31,16 @@ const styles = StyleSheet.create({
   bigger: {
     // flex: 5,
     flexBasis: '78%',
-    paddingRight: 5
+    paddingRight: 10,
+    marginRight: 5
   },
   bold: {
     fontWeight: 'bold'
   },
   roundMode: {
-    height: 40,
-    width: 40,
-    borderRadius: 20,
+    height: 35,
+    width: 35,
+    borderRadius: 17,
   },
   blockMode: {
     height: 45,
@@ -62,24 +67,6 @@ const styles = StyleSheet.create({
     marginVertical: 5
   },
 })
-/*
-
-https://i.imgur.com/UFUGlGnt.jpg
-https://i.imgur.com/PBCuYl6t.jpg
-https://i.imgur.com/Qsv8Hjft.jpg
-https://i.imgur.com/DCbYbzJt.jpg
-
-https://i.imgur.com/sX8txA1t.jpg
-https://i.imgur.com/bIx25r5t.jpg
-https://i.imgur.com/cUWRPkct.jpg
-https://i.imgur.com/fdkkip8t.jpg
-
-https://i.imgur.com/H2j7aTkt.jpg
-https://i.imgur.com/jj3Y7FEt.jpg
-https://i.imgur.com/6yMZLA0t.jpg
-https://i.imgur.com/7TTqKsxt.jpg
-https://i.imgur.com/s8ZMf7Ot.jpg
-*/
 
 class ListViewAvatar extends PureComponent {
   state = {
@@ -167,43 +154,43 @@ class ListViewAvatar extends PureComponent {
 
 // TimeAgo.locale(en)
 // const timeAgo = new TimeAgo('en-US')
-export class SimpleTableView extends PureComponent {
-  state = {}
-
-  render() {
-    let ListItem = (data) => {
-      let { users } = this.props
-      debugger
-      let renderUsers = (uid) => {
-        return users.find(u => u.id === uid)
-      }
-      let avatar = objectPath.get(renderUsers(data.user_id), 'avatar', '')
-      let renderAvatar
-      if (!avatar) {
-        renderAvatar = <View></View>
-      } else {
-        renderAvatar = <AsyncImage
-          source={{ uri: avatar }}
-          resizeMode='cover' style={styles.roundMode} />
-      }
-      return (
-        <View style={[styles.container, styles.lineheight]}>
-          <View style={[styles.container, styles.common, { alignItems: 'flex-start' }]}>
-            {renderAvatar}
-          </View>
-          <View style={[styles.container, styles.bigger, { flexDirection: 'column' }]}>
-            <Text style={styles.textStyle}>{data.text}
-              <Icon name="md-arrow-dropright" size={22} color={'#a3a3a3'} />
-              <Text style={styles.textTime}>  {timeSince(new Date(data.created))}</Text>
-            </Text>
-
-          </View>
-          <View style={[styles.container, styles.tiny]}>
-            <Icon name="ios-information-outline" size={22} />
-          </View>
+export class SimpleTableView extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+  state = {
+    usersComments: []
+  }
+  renderUsers(uid) {
+    let { usersComments } = this.state
+    return usersComments.find(u => u.id === uid)
+  }
+  componentWillReceiveProps(nextProps) {
+    this.setState({ usersComments: nextProps.users })
+  }
+  renderListItem(data) {
+    let avatar = objectPath.get(this.renderUsers(data.user_id), 'avatar')
+    return (
+      <View style={[styles.container, styles.lineheight]}>
+        <View style={[styles.container, styles.common, { alignItems: 'flex-start' }]}>
+          {!avatar ? <View></View> :
+            <AsyncImage
+              source={{ uri: resizeImageByWidth(avatar, width / 5) }}
+              resizeMode='cover'
+              style={{ height: 34, width: 34, borderRadius: 17 }} />
+          }
         </View>
-      )
-    }
+        <View style={[styles.container, styles.bigger, { flexDirection: 'column', alignItems: 'flex-start' }]}>
+          <Text style={styles.textStyle}>{data.text}</Text>
+          <Text style={styles.textTime}>{`${timeSince(new Date(data.created))}`}</Text>
+        </View>
+        <View style={[styles.container, styles.tiny]}>
+          <Icon name="ios-information-outline" size={22} />
+        </View>
+      </View>
+    )
+  }
+  render() {
     return (
       <View style={{ flex: 1 }}>
         <FlatList
@@ -211,8 +198,8 @@ export class SimpleTableView extends PureComponent {
           extraData={this.state}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => ListItem(item)} />
-      </View >
+          renderItem={({ item }) => this.renderListItem(item)} />
+      </View>
     );
   }
 }

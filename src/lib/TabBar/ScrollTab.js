@@ -15,15 +15,15 @@ import DefaultTabBarScrollable from "./DefaultTabBarScrollable";
  */
 
 export default class ScrollTab extends PureComponent {
-    render() {
-        return <ScrollableTabView
-            renderTabBar={() => <DefaultTabBarScrollable />}
-            prerenderingSiblingsNumber={0}
-            locked={false}
-            scrollWithoutAnimation={false}
-            {...this.props}
-        >
-            {this.props.children}
-        </ScrollableTabView>
-    }
+  render() {
+    return <ScrollableTabView
+      renderTabBar={() => <DefaultTabBarScrollable />}
+      prerenderingSiblingsNumber={0}
+      locked={false}
+      scrollWithoutAnimation={true}
+      {...this.props}
+    >
+      {this.props.children}
+    </ScrollableTabView>
+  }
 }

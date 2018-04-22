@@ -5,87 +5,118 @@ import {
   View,
   FlatList,
   Image,
+  RefreshControl,
   Dimensions
 } from 'react-native'
 import { SearchInput } from 'react-native-search-input'
-import { H2 } from '../../lib/commons/H'
+import { H1, H2 } from '../../lib/commons/H'
 import MediaLoading from '../../lib/MediaLoading'
 import Button from '../../lib/commons/Button'
 import AsyncImage from '../../lib/commons/AsyncImage'
+import { getAllExplores, fetchExploreAll, getCurrentExploresLock } from '../../store/explore'
+import { getUsers } from '../../store/user'
+import { getOwnerID } from '../../store/auth'
+import { connect } from 'react-redux'
+import BottomLoader from '../../lib/commons/BottomLoader'
+import { getUsersEmotion } from '../../store/emotion'
+import OtherEmotion from '../Feeds/Emotion'
+import { resizeImageByWidth } from '../../utils/func'
 const { width } = Dimensions.get('window')
+const objectPath = require('object-path')
+
 class SearchView extends Component {
   constructor(props) {
     super(props)
-    this.item = {
-      link: 'https://picsum.photos/100/100/?random',
-      time: '5h ago',
-      notice: 'style of the default tab bars underline'
-    }
-    let tempList = []
-    let items = ['https://i.imgur.com/UFUGlGnm.jpg',
-    'https://i.imgur.com/PBCuYl6m.jpg',
-    'https://i.imgur.com/Qsv8Hjfm.jpg',
-    'https://i.imgur.com/DCbYbzJm.jpg',
-    'https://i.imgur.com/sX8txA1m.jpg',
-    'https://i.imgur.com/bIx25r5m.jpg',
-    'https://i.imgur.com/cUWRPkcm.jpg',
-    'https://i.imgur.com/fdkkip8m.jpg',
-    'https://i.imgur.com/H2j7aTkm.jpg',
-    'https://i.imgur.com/jj3Y7FEm.jpg',
-    'https://i.imgur.com/6yMZLA0m.jpg',
-    'https://i.imgur.com/7TTqKsxm.jpg',
-    'https://i.imgur.com/s8ZMf7Om.jpg']
-    for (let i = 0; i < 6; i++) {
-      tempList.push({
-        link: items[i],
-        time: '5h ago',
-        notice: 'style of the default tab bars underline'
-      })
-    }
     this.state = {
-      list: tempList
+      isRefreshing: false
     }
     this.fetchMore = this.fetchMore.bind(this)
+    this.HeaderComponents = this.HeaderComponents.bind(this)
   }
-  renderImageButton (item) {
-    return <Button style={{ width: width / 3, height: width / 3, marginRight: 2, marginBottom: 2 }}>
+  static navigationOptions = {
+    header: null
+  }
+  async componentDidMount() {
+    await this.props.fetchExploreAll()
+  }
+  getFirstMedia(post) {
+    return objectPath.get(post, 'media.0', {})
+  }
+  onClickToView(item) {
+    let getPostId = item.id
+    this.props.navigation.navigate('Explore', { post_id: getPostId })
+  }
+  renderImageButton(item) {
+    let firstMedia = this.getFirstMedia(item)
+    return <Button style={{
+      width: width / 3,
+      height: width / 3,
+      marginRight: 2,
+      marginBottom: 2
+    }} onPress={this.onClickToView.bind(this, item)}>
       <AsyncImage
-        source={{ uri: item.link }}
+        source={{ uri: resizeImageByWidth(firstMedia.url, width / 3) }}
         style={{ width: width / 3, height: width / 3 }}
         resizeMode="cover"
         placeholderColor="#dcc"
       />
     </Button>
   }
-  fetchMore () {
-    let items = ['https://i.imgur.com/UFUGlGnm.jpg',
-    'https://i.imgur.com/PBCuYl6m.jpg',
-    'https://i.imgur.com/Qsv8Hjfm.jpg',
-    'https://i.imgur.com/DCbYbzJm.jpg',
-    'https://i.imgur.com/sX8txA1m.jpg',
-    'https://i.imgur.com/bIx25r5m.jpg',
-    'https://i.imgur.com/cUWRPkcm.jpg',
-    'https://i.imgur.com/fdkkip8m.jpg',
-    'https://i.imgur.com/H2j7aTkm.jpg',
-    'https://i.imgur.com/jj3Y7FEm.jpg',
-    'https://i.imgur.com/6yMZLA0m.jpg',
-    'https://i.imgur.com/7TTqKsxm.jpg',
-    'https://i.imgur.com/s8ZMf7Om.jpg']
-    let tempList = []
-    for (let i = 0; i < 6; i++) {
-      tempList.push({
-        link: items[0],
-        time: '5h ago',
-        notice: 'style of the default tab bars underline'
-      })
-    }
-    this.setState(prevState => {
-      return {
-        list: [...prevState.list, ...tempList]
-      }
-    })
+  async fetchMore() {
+    if (!this.props.locked)
+      await this.props.fetchExploreAll()
   }
-  render () {
+  onRefreshList() {
+    setTimeout(() => {
+      this.setState({ isRefreshing: false })
+    }, 4000)
+  }
+  RefreshControl = () => <RefreshControl
+    refreshing={this.state.isRefreshing}
+    onRefresh={this.onRefreshList.bind(this)}
+    // title="Pull to refresh"
+    tintColor="red"
+  // titleColor="red"
+  />
+  RenderFooter() {
+    if (!this.props.locked) {
+      return (<BottomLoader />)
+    }
+    return <View />
+  }
+  HeaderComponents() {
+    let { emotions } = this.props
+    return (
+      <View>
+        <OtherEmotion emotions={emotions} />
+        <AsyncImage
+          placeholderColor="#dcc"
+          source={{ uri: 'https://picsum.photos/300/150/?random' }}
+          style={{ width: width, height: width / 2, marginRight: 1 }}
+          resizeMode="cover" />
+        <H2 text="Story" style={{ margin: 3, color: '#bbb' }} />
+      </View>
+    )
+  }
+  render() {
+    let { explores } = this.props
+    let RenderLoading = <View />
+    let RenderView = <FlatList
+      ListHeaderComponent={() => this.HeaderComponents()}
+      showsHorizontalScrollIndicator={false}
+      refreshControl={this.RefreshControl.bind(this)()}
+      scrollEventThrottle={16}
+      style={{ height: '100%' }}
+      data={explores}
+      automaticallyAdjustContentInsets={false}
+      numColumns={3}
+      extraData={this.state}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={({ item }) => this.renderImageButton(item)}
+      onEndReached={() => this.fetchMore()}
+      onEndReachedThreshold={.01}
+      ListFooterComponent={this.RenderFooter.bind(this)}
+    />
     return (
       <View style={{ marginTop: 20, flex: 1 }}>
         <SearchInput
@@ -97,31 +128,20 @@ class SearchView extends Component {
         * Please scroll down to Props section
         */
         />
-
-        <FlatList
-          ListHeaderComponent={() => <View>
-            <AsyncImage
-              placeholderColor="#dcc"
-              source={{ uri: 'https://picsum.photos/300/150/?random' }}
-              style={{ width: width, height: width / 2, marginRight: 1 }}
-              resizeMode="cover" />
-            <H2 text="Story" style={{ margin: 3, color: '#bbb' }} />
-          </View>}
-          showsHorizontalScrollIndicator={false}
-          scrollEventThrottle={16}
-          style={{ height: '100%' }}
-          data={this.state.list}
-          automaticallyAdjustContentInsets={false}
-          numColumns={3}
-          extraData={this.state}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => this.renderImageButton(item)}
-          onEndReached={() => this.fetchMore()}
-          onEndReachedThreshold={0}
-        />
+        {explores.length > 0 ? RenderView : RenderLoading}
       </View>
     )
   }
 }
-
-export default SearchView
+let mapStateToProps = state => {
+  return {
+    users: getUsers(state),
+    locked: getCurrentExploresLock(state),
+    uid: getOwnerID(state),
+    explores: getAllExplores(state),
+    emotions: getUsersEmotion(state),
+  }
+}
+export default connect(mapStateToProps, {
+  fetchExploreAll
+})(SearchView)

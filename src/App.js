@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, StatusBar } from 'react-native';
 import { store } from './config/configureStore'
 import { Provider } from 'react-redux';
 import SplashScreen from 'react-native-splash-screen'

@@ -1,9 +1,13 @@
 import React, { PureComponent } from 'react'
-import { Animated, View, StyleSheet, Image, Dimensions, ScrollView, FlatList } from 'react-native'
+import {
+	Animated, View, StyleSheet, Image,
+	Dimensions, ScrollView, FlatList
+} from 'react-native'
+import Button from '../commons/Button'
 const deviceWidth = Dimensions.get('window').width
 const FIXED_BAR_WIDTH = 280
 const BAR_SPACE = 10
-const MAX_HEIGHT = 280
+const MAX_HEIGHT = 320
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
@@ -14,7 +18,7 @@ const styles = StyleSheet.create({
 	barContainer: {
 		position: 'absolute',
 		zIndex: 2,
-		top: 10,
+		bottom: -20,
 		flexDirection: 'row',
 	},
 	track: {
@@ -33,19 +37,23 @@ const styles = StyleSheet.create({
 export default class ImageSlider extends PureComponent {
 
 	numItems = this.props.images.length
-	itemWidth = 8 || (FIXED_BAR_WIDTH / this.numItems) - ((this.numItems - 1) * BAR_SPACE)
+	itemWidth = 6 || (FIXED_BAR_WIDTH / this.numItems) - ((this.numItems - 1) * BAR_SPACE)
 	animVal = new Animated.Value(0)
 	calculateImageSize(imageLink) {
-		return imageLink.replace('/upload/', `/upload/c_scale,w_${deviceWidth * 3}/`)
+		// return imageLink.replace('/upload/', `/upload/c_scale,w_${deviceWidth * 3}/`)
+		return imageLink
 	}
 	render() {
 		let ImageListRender = (item) =>
+			// <Button activeOpacity={1}
+			// 	style={{ width: deviceWidth, height: MAX_HEIGHT }}
+			// 	onPress={this.props.onDoubleClick}>
 			<Image
 				source={{ uri: this.calculateImageSize(item.url) }}
 				style={{ width: deviceWidth }}
 				placeholderColor="#eee"
 			/>
-
+		// </Button>
 		let barArray = []
 		this.props.images.forEach((image, key) => {
 			const scrollBarVal = this.animVal.interpolate({
@@ -61,6 +69,8 @@ export default class ImageSlider extends PureComponent {
 						styles.track,
 						{
 							width: this.itemWidth,
+							height: this.itemWidth,
+							borderRadius: this.itemWidth / 2,
 							marginLeft: key === 0 ? 0 : BAR_SPACE,
 						},
 					]}
@@ -68,6 +78,7 @@ export default class ImageSlider extends PureComponent {
 					<Animated.View
 						style={[styles.bar, {
 							width: this.itemWidth,
+							height: this.itemWidth,
 							transform: [
 								{ translateX: scrollBarVal },
 							]
@@ -78,36 +89,45 @@ export default class ImageSlider extends PureComponent {
 			)
 			barArray.push(thisBar)
 		})
-		// if (this.props.images.length > 1)
+		let renderSubIcon
 		return (
+			// this.props.images.length > 1 ?
 			<View
-				style={styles.container}
+				style={[styles.container, { position: 'relative' }]}
 				flex={1}
 			>
-				<FlatList
+				{renderSubIcon}
+				< FlatList
 					horizontal
 					showsHorizontalScrollIndicator={false}
 					scrollEventThrottle={10}
 					pagingEnabled
-					style={{ height: '100%' }}
+					style={{ height: '100%' }
+					}
 					onScroll={
 						Animated.event(
 							[{ nativeEvent: { contentOffset: { x: this.animVal } } }]
-						)}
+						)
+					}
 					data={this.props.images}
 					extraData={this.props}
-					keyExtractor={(item, index) => index.toString()}
+					keyExtractor={(item, index) => index.toString()
+					}
 					renderItem={({ item }) => ImageListRender(item)}
 				/>
-				<View
+				< View
 					style={styles.barContainer}
 				>
 					{barArray}
-				</View>
-			</View>
+				</View >
+			</View >
+			// :
+			// <View
+			// 	style={[styles.container, { position: 'relative' }]}
+			// 	flex={1}
+			// >
+			// 	<ImageListRender url={this.props.images[0]} />
+			// </View>
 		)
-		// else return (
-		// 	<ImageListRender url={this.props.images[0]} />
-		// )
 	}
 }

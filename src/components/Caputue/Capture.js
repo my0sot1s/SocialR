@@ -15,17 +15,16 @@ import { H1, H2, H3, H4 } from '../../lib/commons/H'
 import Button from '../../lib/commons/Button'
 import { flexCenter } from '../../lib/commons/themes'
 import Icon from 'react-native-vector-icons/Ionicons';
-import uploadImageFiles from '../../api/upload'
-import { postDemo, sendCreatePost } from '../../api/post'
-import Modal from "react-native-modal";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { LogoTitle } from '../Comments/Comment'
+import ScrollTabIcons from '../../lib/TabBar/ScrollTab'
+import HeaderCustom from '../../lib/commons/Header'
+import styles2, { colors } from '../../lib/SliderSnap/index.style'
+import Carousel, { Pagination } from 'react-native-snap-carousel'
+import { sliderWidth, itemWidth } from '../../lib/SliderSnap/SliderEntry.style'
+import { scrollInterpolators, animatedStyles } from '../../lib/SliderSnap/animations'
+import SliderEntry from '../../lib/SliderSnap/SliderEntry'
 const { height, width } = Dimensions.get('window')
-
-const DoUpload = async (imgs) => {
-  debugger
-  let fileInfo = await uploadImageFiles(imgs)
-  return fileInfo
-}
 
 // https://www.codementor.io/blessingoraz/access-camera-roll-with-react-native-9uwupuuy0
 class CameraRollView extends PureComponent {
@@ -35,42 +34,39 @@ class CameraRollView extends PureComponent {
     var controls = props.controls
     this.state = {
       images: [],
+      videos: [],
       selected: [],
-      fetchParams: { first: 111 },
-      groupTypes: 'SavedPhotos',
-      isVisible: false,
+      fetchParamsImage: { first: 111, assetType: 'Photos' },
+      fetchParamsVideo: { first: 111, assetType: 'Videos' },
       showLoading: false
     }
-    this.StoreImages = this.StoreImages.bind(this)
-    // this.LogImageError = this.LogImageError.bind(this)
-    // this.SelectImage = this.SelectImage.bind(this)
+    this.customExample = this.customExample.bind(this)
   }
 
+  static navigationOptions() {
+    return {
+      header: null
+    }
+  }
   async componentDidMount() {
     // get photos from camera roll
-    let data = await CameraRoll.getPhotos(this.state.fetchParams);
-    this.StoreImages(data)
-  }
-  async CreatePost(text) {
-    let imageList = this.GetListImagesSelected(this.state.selected)
-    let imagesInfo = await DoUpload(imageList)
-    let tagDefault = ['test', 'iphone5']
-    let uid = '5a106166cb8eae85d819a78e'
-    let formOk = await sendCreatePost({ tags: tagDefault, medias: imagesInfo, uid: uid, content: text })
-    alert(JSON.stringify(formOk))
-  }
-  ChangeModalVisible() {
-    // alert(this.state.isVisible)
-    this.setState({ isVisible: !this.state.isVisible })
+    let photos = await CameraRoll.getPhotos(this.state.fetchParamsImage)
+    let videos = await CameraRoll.getPhotos(this.state.fetchParamsVideo)
+    this.StoreMedias([photos, videos])
+    // this.StoreMedias(data[1], 'videos')
   }
   // callback which processes received images from camera roll and stores them in an array
-  StoreImages(data) {
-    const assets = data.edges;
-    const images = assets.map(asset => asset.node.image);
+  StoreMedias(data = []) {
+    let medias = []
+    for (let media of data) {
+      const assets = media.edges;
+      medias.push(assets.map(asset => asset.node.image))
+    }
     this.setState({
-      images,
-      numColumns: 4,
-      selected: images.length > 0 ? [images[0].uri] : []
+      images: medias[0],
+      videos: medias[1],
+      numColumns: 3,
+      selected: medias[0].length > 0 ? [medias[0][0].uri] : []
     });
   }
 
@@ -82,40 +78,29 @@ class CameraRollView extends PureComponent {
       }
       return { selected: [...images] }
     })
-    // console.log(this.state.selected)
   }
-  HightlightImageSelected = (image) => {
-    return this.state.selected.some(img => img === image)
+  ImageRended(image) {
+    return (
+      <Button style={[
+        { borderColor: `#3097D1` }]}
+        onPress={this.SelectImage.bind(this, image.uri)}
+        style={styles.buttonSize}
+      >
+        <Image style={styles.image}
+          source={{ uri: image.uri }}
+          resizeMode="cover" />
+      </Button>
+    )
   }
-  ImageRended = (image) =>
-    <TouchableHighlight style={[
-      { borderColor: `#3097D1`, borderWidth: this.HightlightImageSelected(image.uri) ? 2 : 0 }]}
-      onPress={this.SelectImage.bind(this, image.uri)}
-    >
-      <Image style={styles.image}
-        source={{ uri: image.uri }}
-        resizeMode="cover" />
-    </TouchableHighlight>
 
   RenderBigImages = (img) =>
-    <Image style={[styles.bigImage, { width: 0.98 * width, marginHorizontal: 5 }]}
+    <Image style={[styles.bigImage, {
+      width: 0.98 * width,
+      marginHorizontal: 5,
+      marginVertical: 3
+    }]}
       source={{ uri: img }}
       resizeMode="cover" />
-
-  RenderPreviewImage = () =>
-    <FlatList
-      data={this.state.selected}
-      horizontal
-      style={[styles.bigImage, { width }]}
-      keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item }) => this.RenderBigImages(item)} />
-
-  RenderCameraRoll = () =>
-    <FlatList
-      data={this.state.images}
-      keyExtractor={(item, index) => index.toString()}
-      numColumns={4}
-      renderItem={({ item }) => this.ImageRended(item)} />
 
   GetListImagesSelected = (imgSelected) => {
     let images = this.state.images.filter(img => {
@@ -123,48 +108,113 @@ class CameraRollView extends PureComponent {
     })
     return images
   }
-  render() {
+  componentWillUnmount() {
+    this.setState({
+      images: [],
+      videos: [],
+      selected: []
+    })
+    this.state = null
+  }
+  customExample(data, refNumber = 1) {
+    const isEven = refNumber % 2 === 0
+
+    // Do not render examples on Android because of the zIndex bug, they won't work as is
     return (
-      <View style={{ height, width, marginTop: 20 }}>
-        <Header ChangeModalVisible={this.ChangeModalVisible.bind(this)} />
-        <View style={[styles.bigImage, { marginVertical: 5 }]}>
-          {this.RenderPreviewImage()}
+      <View style={[{ flex: 1 }, styles.bigImage]}>
+        <Carousel
+          data={data}
+          renderItem={({ item, index }) => < SliderEntry
+            data={item} even={(index + 1) % 2 === 0} />}
+          sliderWidth={width}
+          itemWidth={0.85 * width}
+          loop={true}
+          // containerCustomStyle={styles2.slider}
+          // contentContainerCustomStyle={styles2.sliderContentContainer}
+          scrollInterpolator={scrollInterpolators[`scrollInterpolator${refNumber}`]}
+          slideInterpolatedStyle={animatedStyles[`animatedStyles${refNumber}`]}
+          useScrollView={true}
+        />
+        {/* {this.RenderBigImages(data.url)} */}
+      </View>
+    )
+  }
+  render() {
+
+    let RenderPicker = (props) => {
+      let { tabLabel } = props
+      let renderType = tabLabel === 'Image' ? this.state.images
+        : this.state.videos
+      return <View style={styles.container} >
+        <FlatList
+          data={renderType}
+          keyExtractor={(item, index) => index.toString()}
+          numColumns={3}
+          renderItem={({ item }) => this.ImageRended(item)} />
+      </View>
+    }
+    let imageRender = this.state.selected.map(v => {
+      return { url: v }
+    })
+    return (
+      <View style={{ flex: 1 }}>
+        <HeaderCustom
+          // centerComponent={
+          //   <LogoTitle text={"Create Post".toUpperCase()}
+          //     style={{ color: "#aaa" }} />
+          // }
+          leftComponent={
+            <Button onPress={() => this.props.navigation.navigate('Feeds')} >
+              <H2 text="Back" style={{
+                textDecorationLine: 'underline',
+                fontWeight: 'normal'
+              }} />
+            </Button >}
+          rightComponent={
+            <Button onPress={() => this.props.navigation.navigate('Upload',
+              { sender: this.GetListImagesSelected(this.state.selected) })}>
+              <H2 text="Publish" style={{
+                textDecorationLine: 'underline',
+                fontWeight: 'normal'
+              }} />
+            </Button>
+          } />
+        <View style={[styles.bigImage]}>
+          {/* {this.customExample(imageRender)} */}
+          <FlatList
+            data={this.state.selected}
+            keyExtractor={(item, index) => index.toString()}
+            horizontal
+            style={styles.bigImage}
+            // numColumns={3}
+            renderItem={({ item }) => this.RenderBigImages(item)} />
         </View>
-        <View style={styles.container}>
-          {this.RenderCameraRoll()}
-        </View>
-        <Modal isVisible={this.state.isVisible}>
-          <KeyboardAwareScrollView>
-            <View style={{ height: 0.45 * height, backgroundColor: '#fff' }}>
-              <ModalInside
-                ChangeModalVisible={this.ChangeModalVisible.bind(this)}
-                CreatePost={this.CreatePost.bind(this)} />
-            </View>
-            <View style={{ height: 60 }} />
-          </KeyboardAwareScrollView>
-        </Modal>
+        <ScrollTabIcons tabBarPosition="bottom" style={{ paddingTop: 3, height: 45 }}>
+          <RenderPicker tabLabel="Image" />
+          <RenderPicker tabLabel="Video" />
+        </ScrollTabIcons>
       </View >
     );
   }
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    height: 0.4 * height
+    // flex: 1,
+    height: 0.3 * height
   },
   bigImage: {
-    height: 0.55 * height
+    height: 0.6 * height
   },
   buttonSize: {
-    width: 0.24 * width,
-    height: 0.24 * width,
-    marginHorizontal: 3,
-    marginVertical: 3
+    width: 0.32 * width,
+    height: 0.32 * width,
+    marginHorizontal: 2,
+    marginVertical: 2
   },
   image: {
-    width: 0.24 * width,
-    height: 0.24 * width,
+    width: 0.32 * width,
+    height: 0.32 * width,
   },
   headerContainer: {
     height: 40,
@@ -174,110 +224,5 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   }
 });
-
-
-class Header extends PureComponent {
-  constructor(props) {
-    super(props)
-  }
-  PressUploadPost() {
-    this.props.ChangeModalVisible()
-  }
-  CaptureRequest() {
-    alert("Chua phat trien")
-  }
-  render() {
-    return (
-      <View style={[styles.headerContainer, { flexDirection: 'row', borderBottomWidth: 1, borderColor: '#ececec' }]}>
-        <View style={[styles.headerContainer, { flexDirection: 'row', flexBasis: '15%' }]}>
-          <Icon
-            name="ios-camera"
-            size={30}
-            color={'#5b5b5b'}
-            style={{ paddingHorizontal: 10 }}
-            onPress={this.CaptureRequest}
-          />
-        </View>
-        <View style={[styles.headerContainer, { flexDirection: 'row', flexBasis: '70%' }]}>
-          <H3 text="Share Image" style={{ color: '#5b5b5b', fontFamily: 'Zapfino' }}></H3>
-        </View>
-        <View style={[styles.headerContainer, { flexDirection: 'row', flexBasis: '15%' }]}>
-          <Button style={{ alignContent: 'flex-end' }}>
-            <Icon
-              name="ios-arrow-forward-outline"
-              size={23}
-              color={'#5b5b5b'}
-              style={{ paddingHorizontal: 10 }}
-              onPress={this.PressUploadPost.bind(this)}
-            />
-          </Button>
-        </View>
-      </View>
-    );
-  }
-}
-
-
-class ModalInside extends PureComponent {
-  constructor(props) {
-    super(props)
-  }
-  state = {
-    text: ''
-  }
-  HideForm() {
-    this.props.ChangeModalVisible()
-  }
-  CreatePost() {
-    if (this.state.text)
-      this.props.CreatePost(this.state.text)
-  }
-  render() {
-    return (
-      <View>
-        <View style={[flexCenter, { height: 0.08 * height, borderBottomColor: '#eee', borderBottomWidth: 1 }]}>
-          <View style={{ flexBasis: '15%' }}></View>
-          <View style={{ flexBasis: '70%' }}>
-            <H2 text="Share" style={{ textAlign: 'center', fontFamily: 'Zapfino' }} />
-          </View>
-          <View style={{ flexBasis: '15%' }}>
-            <Icon name={"ios-close-outline"} size={42}
-              style={{ textAlign: 'right', marginRight: 15 }}
-              onPress={this.HideForm.bind(this)}></Icon>
-          </View>
-        </View>
-        <View style={[{ height: 0.27 * height }]}>
-          <TextInput
-            style={{ height: 0.27 * height, width: '98%', marginHorizontal: 0.02 * width, fontSize: 14 }}
-            onChangeText={(text) => this.setState({ text })}
-            value={this.state.text}
-            multiline={true}
-            returnKeyType={'done'}
-            enablesReturnKeyAutomatically={true}
-            placeholder={"Enter your caption"}>
-          </TextInput>
-        </View>
-        <View style={[flexCenter, {
-          height: 0.1 * height,
-          borderTopColor: '#eee',
-          borderTopWidth: 1,
-          flexDirection: 'row'
-        }]}>
-          <Button style={[flexCenter, {
-            flexBasis: '50%', height: 0.1 * height,
-            borderRightWidth: 1,
-            borderRightColor: '#eee'
-          }]} onPress={this.HideForm.bind(this)} >
-            <Text style={{ fontSize: 18, color: '#5b5b5b' }}>Cancel</Text>
-          </Button>
-          <Button style={[flexCenter, { flexBasis: '50%', height: 0.1 * height }]}
-            onPress={this.CreatePost.bind(this)}>
-            <Text style={{ fontSize: 18, color: '#5b5b5b' }} >Ok</Text>
-          </Button>
-        </View>
-      </View >
-    );
-  }
-}
 
 export default CameraRollView

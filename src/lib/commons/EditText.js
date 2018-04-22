@@ -15,7 +15,9 @@ class EditTextHighLightFocus extends React.PureComponent {
     return (
       <TextInput
         underlineColorAndroid="transparent"
-        style={[styles.formControl, { borderColor: this.state.focused ? theme.primaryColor : theme.divider }]}
+        style={[styles.formControl,
+        { borderColor: this.state.focused ? theme.primaryColor : theme.divider },
+        this.props.addition]}
         onFocus={() => this.setState({ focused: true })}
         onBlur={() => this.setState({ focused: false })}
         {...this.props}

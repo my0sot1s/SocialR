@@ -1,5 +1,6 @@
 import { call, takeLatest, put } from 'redux-saga/effects'
 import { login, register } from '../api/auth'
+import { SetStorage } from '../config/configureStore'
 export const LOGIN_REQ = 'LOGIN_REQ'
 export const LOGIN_SUCCESSFUL = 'LOGIN_SUCCESSFUL'
 export const LOGIN_FALURE = 'LOGIN_FALURE'
@@ -36,6 +37,10 @@ export function* startLogout() {
 export function* startLogin({ username, password }) {
   try {
     const json = yield call(login, username, password)
+    yield SetStorage('LOGIN', {
+      username,
+      password
+    })
     yield put({ type: LOGIN_SUCCESSFUL, data: json })
   } catch (error) {
     yield put({ type: LOGIN_FALURE, error })

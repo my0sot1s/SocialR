@@ -30,3 +30,13 @@ export let getFeedPosts = async ({ uid, limit, anchor }) => {
   let json = await blob.json()
   return json
 }
+
+export const getExplores = async ({ owner, limit, anchor }) => {
+  let query = qs.stringify({
+    limit,
+    anchor
+  })
+  let explores = await GetBlob(`explore/${owner}?${query}`)
+  let json = await explores.json()
+  return json
+}

@@ -1,5 +1,7 @@
-import { GetBlob,
-  PostForm} from './common'
+import {
+  GetBlob,
+  PostForm
+} from './common'
 
 export const fetchCountLike = async (uid, pid) => {
   let raw = await GetBlob(`like/${uid}/count/${pid}`)
@@ -14,6 +16,10 @@ export const checkOwnLike = async (uid, pid) => {
   let json = await raw.json()
   return json
 }
+
+export const getInfoLike = async (uid, pid) => Promise.all(
+  [fetchCountLike(uid, pid),
+  checkOwnLike(uid, pid)])
 
 export const hitLikePost = async (uid, pid) => {
   let raw = await PostForm(`like/${uid}/like/${pid}`, [
