@@ -31,3 +31,9 @@ export const postCommentPost = async (uid, pid, text) => {
   let json = await comments.json()
   return json
 }
+
+export const fetchCountComment = async (uid, pid) => {
+  let raw = await GetBlob(`comment/${uid}/count/${pid}`)
+  let count = await raw.text()
+  return count
+}

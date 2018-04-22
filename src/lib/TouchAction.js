@@ -96,8 +96,8 @@ class TouchAction extends PureComponent {
       commentBox = <View />
     } else {
       let cmtText = []
-      newerComments.forEach(v => {
-        cmtText.push(<H4 text={v.text} />)
+      newerComments.forEach((v, key) => {
+        cmtText.push(<H4 text={v.text} key={key} />)
       })
       commentBox = <View>
         {cmtText}
@@ -111,14 +111,28 @@ class TouchAction extends PureComponent {
     objectPath.get(this.props, 'tags', []).forEach(v => {
       tag += ` #${v} `
     })
+    let countComment = this.props.commentCount == 0 ? `Press to comment this post` :
+      `View more ${this.props.commentCount} comments...`
     let iconDefined = ['ios-quote', 'ios-send', 'blank', 'md-bookmark']
     let eventDefined = [this.sendToComment, this.Shared.bind(this), this.Shared]
     return (
       <View style={[styles.container, { flexDirection: 'column', height: 100, marginTop: 3 }]}>
+
         <View style={styles.container}>
+          <View style={[styles.common,
+          styles.container, { flexBasis: 13 + '%' }]}>
+            <ZButton onPress={() => { }} style={{ width: '100%' }}>
+              <Icon
+                name={this.props.isliked ? 'ios-heart' : 'md-heart-outline'}
+                size={32}
+                color={this.props.isliked ? '#f44295' : '#444'}
+                style={{ padding: 3 }} />
+            </ZButton>
+          </View>
           {iconDefined.map((icon, index) =>
-            icon != 'blank' ? <View style={[styles.common, styles.container, { height: 3, flexBasis: 17 + '%' }]} key={index}>
-              <ZButton onPress={eventDefined[index]}>
+            icon != 'blank' ? <View style={[styles.common,
+            styles.container, { flexBasis: 13 + '%' }]} key={index}>
+              <ZButton onPress={eventDefined[index]} style={{ width: '100%' }}>
                 <Icon
                   name={icon}
                   color="#444"
@@ -126,7 +140,7 @@ class TouchAction extends PureComponent {
                   size={32} />
               </ZButton>
             </View> :
-              <View style={[styles.common, styles.container, { flexBasis: '45%' }]} key={index}>
+              <View style={[styles.common, styles.container, { flexBasis: '46%' }]} key={index}>
               </View>
           )}
         </View>
@@ -144,7 +158,7 @@ class TouchAction extends PureComponent {
           {commentBox}
           <ZButton onPress={this.viewMoreComments.bind(this)}
             style={{ padding: 0, margin: 0 }}>
-            <H4 text="View more comment ... "
+            <H4 text={countComment}
               style={{
                 color: '#a3a3a3', padding: 0,
                 textAlign: 'left', margin: 0

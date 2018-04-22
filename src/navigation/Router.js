@@ -100,16 +100,16 @@ const MainTabNavigation = TabNavigator({
       )
     })
   },
-  BasicInfo: {
-    screen: Profile,
-    navigationOptions: (props) => ({
-      tabBarIcon: ({ tintColor }) => (
-        tintColor !== '#000'
-          ? <Icon name='ios-person-outline' size={26} />
-          : <Icon name='ios-person' size={26} />
-      )
-    })
-  }
+  // BasicInfo: {
+  //   screen: Profile,
+  //   navigationOptions: (props) => ({
+  //     tabBarIcon: ({ tintColor }) => (
+  //       tintColor !== '#000'
+  //         ? <Icon name='ios-person-outline' size={26} />
+  //         : <Icon name='ios-person' size={26} />
+  //     )
+  //   })
+  // }
 }, tabSettings)
 
 let AuthStack = StackNavigator({

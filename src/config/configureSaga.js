@@ -5,7 +5,7 @@ import { watchLogin, watchLogout } from '../store/auth'
 import { watchFetchUser, watchFetchMultipleUsers } from '../store/user'
 import { watchFetchEmotion } from '../store/emotion'
 import { watchFetchExplores } from '../store/explore'
-import { watchLikeInfo } from '../store/like'
+import { watchLikeInfo, watchLike } from '../store/like'
 export default function* root() {
   yield all([
     fork(watchFetchFeeds),
@@ -17,6 +17,7 @@ export default function* root() {
     fork(watchFetchMultipleUsers),
     fork(watchFetchEmotion),
     fork(watchFetchExplores),
-    fork(watchLikeInfo)
+    fork(watchLikeInfo),
+    fork(watchLike)
   ])
 }

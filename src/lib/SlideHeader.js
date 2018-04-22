@@ -72,9 +72,9 @@ class CardHeader extends PureComponent {
           </ButtonZ>
         </View>
         <Ionicons
-          name={isliked ? 'ios-heart' : 'ios-heart-outline'}
+          name="ios-more"
           size={30}
-          color={isliked ? '#f44295' : '#696969'}
+          color="#444"
           style={styles.icon} />
       </View>
     )

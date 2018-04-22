@@ -26,6 +26,7 @@ export const hitLikePost = async (uid, pid) => {
     { name: 'uid', data: uid }
   ])
   let json = await raw.json()
+  console.log({ json })
   return json
 }
 

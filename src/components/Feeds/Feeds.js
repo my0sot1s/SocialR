@@ -10,7 +10,7 @@ import TouchAction from '../../lib/TouchAction'
 import Emotions from './Emotion'
 import { connect } from 'react-redux'
 import BottomLoader from '../../lib/commons/BottomLoader'
-
+import { H2 } from '../../lib/commons/H'
 import {
   fetchFeedAll,
   fetchFeedRefreshAll,
@@ -59,7 +59,10 @@ class InitScreen extends PureComponent {
       <View style={styles.mainContent}>
         <FlatList
           ListHeaderComponent={() =>
-            <Emotions emotions={emotions} uid={uid} />}
+            <View style={{ flex: 1 }}>
+              <H2 text="Stories" style={{ paddingLeft: 10 }} />
+              <Emotions emotions={emotions} uid={uid} />
+            </View>}
           data={feeds}
           scrollEventThrottle={16}
           keyExtractor={(item, index) => index.toString()}

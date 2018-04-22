@@ -10,15 +10,28 @@ import { connect } from 'react-redux'
 import { isLikePost, countLike } from '../../store/like'
 import Button from '../../lib/commons/Button'
 import { hitLikeNow } from '../../store/like'
+import { fetchCountComment } from '../../api/comment'
+import { getOwnerID } from '../../store/auth';
 const objectPath = require('object-path')
 
 class CardView extends React.PureComponent {
 
+  state = {
+    commentCount: 0
+  }
+  async componentDidMount() {
+    let { id, ownerId } = this.props.data
+    let commentCount = await fetchCountComment(ownerId, id)
+    this.setState({ commentCount })
+  }
+
   lastPress = 0
-  onDoubleClick() {
+  async onDoubleClick(pid) {
+    let { ownerId, hitLikeNow } = this.props
     var delta = new Date().getTime() - this.lastPress
-    if (delta < 200) {
-      alert('clicked')
+    if (delta < 250) {
+      await hitLikeNow(ownerId, pid)
+      alert('liked')
     }
     this.lastPress = new Date().getTime()
   }
@@ -33,7 +46,7 @@ class CardView extends React.PureComponent {
           activeOpacity={1}
           style={{ width: 100 + '%', height: 300, zIndex: 10 }}> */}
         <ImageSlider
-          onDoubleClick={this.onDoubleClick.bind(this)}
+          onDoubleClick={this.onDoubleClick.bind(this, data.id)}
           images={data.media}
           style={{ width: 100 + '%', height: 300, zIndex: 10 }} />
         {/* </Button> */}
@@ -41,6 +54,8 @@ class CardView extends React.PureComponent {
           tags={data.tags}
           pid={data.id}
           countLiked={countLiked}
+          commentCount={this.state.commentCount}
+          isliked={objectPath.get(ownerLiked, 'status')}
           {...this.props} />
         <H4 text={timeAgo}
           style={{ color: '#545454', marginLeft: 15, marginVertical: 5 }} />
@@ -51,7 +66,8 @@ class CardView extends React.PureComponent {
 const mapStateToProps = (state, ownerProp) => {
   return {
     ownerLiked: isLikePost(state, ownerProp.data.id),
-    countLiked: countLike(state, ownerProp.data.id)
+    countLiked: countLike(state, ownerProp.data.id),
+    ownerId: getOwnerID(state)
   }
 }
 export default connect(mapStateToProps, {

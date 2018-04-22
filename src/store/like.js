@@ -46,7 +46,7 @@ export function* watchUnlike() {
 export function* startGetInfo({ uid, pid }) {
   const [count, ownerLike] = yield call(like.getInfoLike, uid, pid)
   console.log({ count, ownerLike, pid })
-  yield put({ type: LIKE_INFO_SUCCESS, data: { count, ownerLike, pid } })
+  yield put({ type: LIKE_INFO_SUCCESS, data: { count: Number(count) || 0, ownerLike, pid } })
 }
 
 export function* startFetchCountLike({ uid, pid }) {
@@ -69,6 +69,7 @@ export function* startCheckLikeCount({ uid, pid }) {
 export function* startLike({ uid, pid }) {
   try {
     const json = yield call(like.hitLikePost, uid, pid)
+    console.log({ json })
     yield put({ type: HIT_LIKE_SUCCESS, data: { ...json, uid, pid } })
   } catch (error) {
     yield put({ type: HIT_LIKE_FAILURE, error })
@@ -101,13 +102,13 @@ export const usersLikeReducers = (state = initState, { type, data, error }) => {
       }
 
     case LIKE_INFO_SUCCESS:
-      state.listCountLike[data.pid] = data.count
+      state.listCountLike[data.ownerLike.pid] = data.count
       return {
         ...state,
         likeList: [...state.likeList, data.ownerLike]
       }
     case HIT_LIKE_SUCCESS:
-      state[data.like] = state[data.like]++
+      state.listCountLike[data.like] = ++state.listCountLike[data.like]
       let templist = {
         pid: data.pid,
         status: true,
@@ -115,8 +116,7 @@ export const usersLikeReducers = (state = initState, { type, data, error }) => {
       }
       return {
         ...state,
-        listCountLike: {},
-        likeList: [...state.likeList, templist]
+        likeList: [...state.likeList.filter(l => l.pid !== data.pid), templist]
       }
     case HIT_LIKE_FAILURE:
       return {
