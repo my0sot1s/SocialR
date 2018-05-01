@@ -9,22 +9,26 @@ import {
 
 import ListCircleAction from '../../lib/CircleList'
 import ImagePicker from 'react-native-image-picker'
-import { addEmotion } from '../../api/emotion'
 import { checkImage } from '../../utils/func'
+import { addUserEmotion } from '../../store/emotion'
 // More info on all the options is below in the README...just some common use cases shown here
 import uploadImageFiles from '../../api/upload'
 import Loading from '../../lib/commons/BottomLoader'
+import { connect } from 'react-redux'
+import { getUsersEmotion, fetchUserEmotion } from '../../store/emotion'
+
 
 class Emotions extends React.PureComponent {
   state = {
     avatarSource: '',
     uploading: false
   }
+
   async selectPhotoTapped() {
     let options = {
       title: 'Select Emotion',
       customButtons: [
-        { name: 'fb', title: 'Choose Photo from Facebook' }
+        // { name: 'fb', title: 'Choose Photo from Facebook' }
       ],
       storageOptions: {
         skipBackup: true,
@@ -56,8 +60,7 @@ class Emotions extends React.PureComponent {
           uri: response.origURL,
           filename: response.fileName
         }])
-        console.log('log', JSON.stringify(mediasUploaded))
-        await addEmotion(this.props.uid, mediasUploaded)
+        await this.props.addUserEmotion(this.props.uid, mediasUploaded)
         this.setState({
           uploading: false
         })
@@ -66,11 +69,13 @@ class Emotions extends React.PureComponent {
 
 
   }
+
   render() {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={[this.props.style, { flex: 1 }]}>
         {!this.state.uploading ?
           <ListCircleAction data={this.props.emotions}
+            {...this.props}
             clickChooseImage={this.selectPhotoTapped.bind(this)} />
           : <Loading />}
       </View>
@@ -95,6 +100,9 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150
   }
-});
+})
 
-export default Emotions
+
+export default connect(null, {
+  addUserEmotion
+})(Emotions)

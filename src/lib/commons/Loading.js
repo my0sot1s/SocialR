@@ -5,7 +5,7 @@ let { height } = Dimensions.get('window')
 export default class Loading extends Component {
   render() {
     return (
-      <View style={[styles.container, styles.horizontal, { backgroundColor: '#efeff4' }]}>
+      <View style={[styles.container, styles.horizontal, { backgroundColor: '#efeff4' }, this.props.style]}>
         <Spinner
           type={this.props.type || 'Circle'}
           color={'#42c8f4'}

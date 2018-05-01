@@ -4,13 +4,15 @@ import { TabNavigator, StackNavigator, SwitchNavigator } from 'react-navigation'
 import Icon from 'react-native-vector-icons/Ionicons'
 import Feeds from '../components/Feeds/Feeds'
 import Comment from '../components/Comments/Comment'
-import ActionLogs from '../components/ActionLog/ActionLog'
+import Me from '../components/Me/me'
 import CameraRollView from '../components/Caputue/Capture'
 import Profile from '../components/ProfileInfo'
 import Search from '../components/Search/Search'
 import Login from '../components/Login'
 import Explore from '../components/Search/ExploresView'
 import UploadPost from '../components/Caputue/UploadPost'
+import Ex from '../components/Explorer/Ex'
+import Notifications from '../components/Notifications'
 
 const tabSettings = {
   tabBarPosition: 'bottom',
@@ -51,7 +53,10 @@ const MainTabNavigation = TabNavigator({
   Search: {
     screen: StackNavigator({
       MainSearch: {
-        screen: Search
+        screen: Ex,
+        // navigationOptions: {
+        //   tabBarVisible: false
+        // }
       },
       Explore: {
         screen: Explore
@@ -71,13 +76,14 @@ const MainTabNavigation = TabNavigator({
       MainCameraRollView: {
         screen: CameraRollView,
         navigationOptions: {
+          header: null,
           tabBarVisible: false
         }
       },
       Upload: {
         screen: UploadPost,
         navigationOptions: {
-          tabBarVisible: false
+          header: null
         }
       }
     }),
@@ -90,18 +96,28 @@ const MainTabNavigation = TabNavigator({
       )
     })
   },
-  ActionLog: {
-    screen: ActionLogs,
+  Me: {
+    screen: StackNavigator({
+      UserInfo: {
+        screen: Me
+      },
+      Notifications: {
+        screen: Notifications
+      }
+    }),
     navigationOptions: (props) => ({
       tabBarIcon: ({ tintColor }) => (
         tintColor !== '#000'
-          ? <Icon name='ios-notifications-outline' size={28} />
-          : <Icon name='ios-notifications' size={28} />
+          ? <Icon name='ios-person-outline' size={32} />
+          : <Icon name='ios-person' size={30} />
+        // ? <Icon name='ios-notifications-outline' size={28} />
+        // : <Icon name='ios-notifications' size={28} />
       )
     })
-  },
+  }
   // BasicInfo: {
-  //   screen: Profile,
+  //   // screen: Profile,
+  //   screen: Ex,
   //   navigationOptions: (props) => ({
   //     tabBarIcon: ({ tintColor }) => (
   //       tintColor !== '#000'

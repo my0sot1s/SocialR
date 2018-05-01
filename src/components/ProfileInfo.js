@@ -59,7 +59,7 @@ export default class example extends Component {
           firstItem={SLIDER_1_FIRST_ITEM}
           inactiveSlideScale={0.94}
           inactiveSlideOpacity={0.7}
-          // inactiveSlideShift={20}
+          horizontal={true}
           containerCustomStyle={styles.slider}
           contentContainerCustomStyle={styles.sliderContentContainer}
           loop={true}
@@ -69,7 +69,7 @@ export default class example extends Component {
           autoplayInterval={3000}
           onSnapToItem={(index) => this.setState({ slider1ActiveSlide: index })}
         />
-        <Pagination
+        {/* <Pagination
           dotsLength={ENTRIES1.length}
           activeDotIndex={slider1ActiveSlide}
           containerStyle={styles.paginationContainer}
@@ -80,7 +80,7 @@ export default class example extends Component {
           inactiveDotScale={0.6}
           carouselRef={this._slider1Ref}
           tappableDots={!!this._slider1Ref}
-        />
+        /> */}
       </View>
     )
   }
@@ -96,6 +96,8 @@ export default class example extends Component {
           sliderWidth={sliderWidth}
           itemWidth={itemWidth}
           inactiveSlideScale={0.95}
+          itemHeight={300}
+          sliderHeight={400}
           inactiveSlideOpacity={1}
           enableMomentum={true}
           activeSlideAlignment={'start'}
@@ -122,11 +124,13 @@ export default class example extends Component {
           renderItem={isTinder ? this._renderLightItem : this._renderItem}
           sliderWidth={sliderWidth}
           itemWidth={itemWidth}
+          itemHeight={300}
+          sliderHeight={400}
           containerCustomStyle={styles.slider}
           contentContainerCustomStyle={styles.sliderContentContainer}
           layout={type}
-          horizontal={false}
           loop={true}
+          style={{ overflow: 'hidden' }}
         />
       </View>
     )
@@ -145,6 +149,9 @@ export default class example extends Component {
           renderItem={renderItemFunc}
           sliderWidth={sliderWidth}
           itemWidth={itemWidth}
+          itemHeight={330}
+          sliderHeight={480}
+          vertical={true}
           containerCustomStyle={styles.slider}
           contentContainerCustomStyle={styles.sliderContentContainer}
           scrollInterpolator={scrollInterpolators[`scrollInterpolator${refNumber}`]}
@@ -179,14 +186,14 @@ export default class example extends Component {
             scrollEventThrottle={200}
             directionalLockEnabled={true}
           >
-            {example1}
+            {/* {example1}
             {example2}
             {example3}
             {example4}
-            {example5}
+            {example5} */}
             {example6}
-            {example7}
-            {example8}
+            {/* {example7}
+            {example8} */}
           </ScrollView>
         </View>
       </SafeAreaView>

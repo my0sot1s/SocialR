@@ -1595,7 +1595,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.example.Majin;
+				PRODUCT_BUNDLE_IDENTIFIER = org.social.Majin;
 				PRODUCT_NAME = SocketApp;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -1628,7 +1628,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.example.Majin;
+				PRODUCT_BUNDLE_IDENTIFIER = org.social.Majin;
 				PRODUCT_NAME = SocketApp;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

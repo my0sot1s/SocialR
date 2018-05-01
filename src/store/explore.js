@@ -12,7 +12,7 @@ export const FETCH_EXPLORES_FALURE = 'FETCH_EXPLORES_FALURE'
 
 const objectPath = require('object-path')
 const initState = {
-  limit: -9,
+  limit: -5,
   explores: [],
   anchor: '',
   // postFetching: false,

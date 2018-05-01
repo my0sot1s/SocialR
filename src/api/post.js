@@ -40,3 +40,13 @@ export const getExplores = async ({ owner, limit, anchor }) => {
   let json = await explores.json()
   return json
 }
+
+export const getMePosts = async ({ owner, limit, anchor }) => {
+  let query = qs.stringify({
+    limit,
+    anchor
+  })
+  let mePosts = await GetBlob(`post/${owner}?${query}`)
+  let json = await mePosts.json()
+  return json
+}

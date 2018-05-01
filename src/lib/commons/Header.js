@@ -5,10 +5,10 @@ import { flexCenter } from './themes'
 const { width } = Dimensions.get('screen')
 let styles = StyleSheet.create({
   short: {
-    height: 35, flexBasis: '27.5%'
+    height: 35, flexBasis: '25%'
   },
   large: {
-    height: 35, flexBasis: '45%'
+    height: 35, flexBasis: '50%'
   },
   container: {
     height: 35,
@@ -21,14 +21,14 @@ let styles = StyleSheet.create({
 class HeaderCustom extends React.PureComponent {
   render() {
     return (
-      <View style={[flexCenter, styles.container]}>
-        <View style={[flexCenter, styles.short]}>
+      <View style={[flexCenter, styles.container, { ...this.props.style }]}>
+        <View style={[flexCenter, styles.short, { ...this.props.style }]}>
           {this.props.leftComponent}
         </View>
-        <View style={[flexCenter, styles.large]}>
+        <View style={[flexCenter, styles.large, { ...this.props.style }]}>
           {this.props.centerComponent}
         </View>
-        <View style={[flexCenter, styles.short]}>
+        <View style={[flexCenter, styles.short, { ...this.props.style }]}>
           {this.props.rightComponent}
         </View>
       </View>

@@ -51,16 +51,19 @@ class ListItem extends PureComponent {
     // get first
     let firstMedia = objectPath.get(props, '0.media.0', [])
     if (objectPath.get(firstMedia, 'public_id') !== 'add-button') {
+      let height = objectPath.get(this.props, 'height', 70)
       return (
-        <Button onPress={() => this.props.onClick(props)} style={{ padding: 0, margin: 0 }}>
-          <CircleImage source={{ uri: resizeImageByWidth(firstMedia.url, width / 4) }}
+        <Button onPress={() => this.props.onClick(props)}
+          style={{ padding: 0, margin: 0 }}>
+          <CircleImage source={{ uri: resizeImageByWidth(firstMedia.url, width / 2) }}
             resizeMode='cover'
-            size={62} />
+            size={height - 10} />
         </Button>
       )
     }
     return (
-      <Button onPress={() => this.props.onClick(props)} style={styles.imageDim}>
+      <Button onPress={() => this.props.onClick(props)}
+        style={styles.imageDim}>
         <View style={[styles.imageDim, flexCenter, { borderColor: '#eee', borderWidth: 1 }]} >
           <Icon name='ios-add' size={30} color='#42c8f4' />
         </View>
@@ -108,6 +111,7 @@ class ListCircle extends PureComponent {
   renderRow(row) {
     return (
       <ListItem media={row}
+        {...this.props}
         onClick={this.onPressEmotions.bind(this)} />
     )
   }
@@ -125,10 +129,10 @@ class ListCircle extends PureComponent {
     let vals = Object.values(data || {}) || []
     let emotions = [addButton, ...vals]
     return (
-      <View style={{
-        height: 74, backgroundColor: '#fff',
+      <View style={[{
+        height: this.props.height || 70, backgroundColor: '#fff',
         borderColor: '#eee', borderBottomWidth: 1
-      }}>
+      }, this.props.style]}>
         <FlatList
           data={emotions}
           extraData={this.state}

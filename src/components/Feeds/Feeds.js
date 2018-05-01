@@ -11,6 +11,7 @@ import Emotions from './Emotion'
 import { connect } from 'react-redux'
 import BottomLoader from '../../lib/commons/BottomLoader'
 import { H2 } from '../../lib/commons/H'
+import PlaceHolder from '../../lib/PlaceHolder'
 import {
   fetchFeedAll,
   fetchFeedRefreshAll,
@@ -44,6 +45,7 @@ class InitScreen extends PureComponent {
   }
   async onRefreshList() {
     this.setState({ isRefreshing: true })
+    await this.props.fetchUserEmotion(this.props.uid)
     let { fetchFeedRefreshAll } = this.props
     await fetchFeedRefreshAll()
     this.setState({ isRefreshing: false })
@@ -53,7 +55,7 @@ class InitScreen extends PureComponent {
       await this.props.fetchFeedAll()
   }
   render() {
-    let { feeds, users, emotions, uid } = this.props
+    let { feeds, users, uid, emotions } = this.props
     if (feeds.length === 0 || users.length === 0) return <Loading />
     return (
       <View style={styles.mainContent}>
@@ -61,7 +63,7 @@ class InitScreen extends PureComponent {
           ListHeaderComponent={() =>
             <View style={{ flex: 1 }}>
               <H2 text="Stories" style={{ paddingLeft: 10 }} />
-              <Emotions emotions={emotions} uid={uid} />
+              <Emotions uid={uid} emotions={emotions} />
             </View>}
           data={feeds}
           scrollEventThrottle={16}
@@ -90,8 +92,8 @@ let mapStateToProps = (state) => {
     feeds: getAllPosts(state),
     users: getUsers(state),
     locked: getCurrentLock(state),
-    emotions: getUsersEmotion(state),
-    uid: getOwnerID(state)
+    uid: getOwnerID(state),
+    emotions: getUsersEmotion(state)
   }
 }
 

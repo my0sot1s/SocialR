@@ -113,7 +113,7 @@ class TouchAction extends PureComponent {
     })
     let countComment = this.props.commentCount == 0 ? `Press to comment this post` :
       `View more ${this.props.commentCount} comments...`
-    let iconDefined = ['ios-quote', 'ios-send', 'blank', 'md-bookmark']
+    let iconDefined = ['ios-chatbubbles-outline', 'ios-paper-plane-outline', 'blank', 'ios-archive-outline']
     let eventDefined = [this.sendToComment, this.Shared.bind(this), this.Shared]
     return (
       <View style={[styles.container, { flexDirection: 'column', height: 100, marginTop: 3 }]}>
@@ -123,8 +123,8 @@ class TouchAction extends PureComponent {
           styles.container, { flexBasis: 13 + '%' }]}>
             <ZButton onPress={() => { }} style={{ width: '100%' }}>
               <Icon
-                name={this.props.isliked ? 'ios-heart' : 'md-heart-outline'}
-                size={32}
+                name={this.props.isliked ? 'ios-heart' : 'ios-heart-outline'}
+                size={30}
                 color={this.props.isliked ? '#f44295' : '#444'}
                 style={{ padding: 3 }} />
             </ZButton>

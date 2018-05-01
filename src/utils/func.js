@@ -33,3 +33,12 @@ export const checkImage = fileName => {
 export const resizeImageByWidth = (link, width) => {
   return link.replace('/upload', `/upload/c_scale,w_${width}`)
 }
+
+export const randomColor = () => {
+  let letters = '0123456789ABCDEF'
+  let color = '#'
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)]
+  }
+  return color
+}

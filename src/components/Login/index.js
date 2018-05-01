@@ -84,6 +84,7 @@ class Login extends Component {
               }} />
               <EditTextHighlight
                 onChangeText={this.changeUsername.bind(this)}
+                autoCapitalize='none'
                 addition={{ padding: 8, fontSize: 16 }}
                 value={this.state.username}
               />

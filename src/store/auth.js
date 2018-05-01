@@ -31,7 +31,8 @@ export function* watchLogout() {
 }
 
 export function* startLogout() {
-  put({ type: LOGOUT_REQ })
+  yield SetStorage('LOGIN', {})
+  put({ type: LOGOUT_DONE })
 }
 
 export function* startLogin({ username, password }) {

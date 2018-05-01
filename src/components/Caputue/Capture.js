@@ -23,9 +23,10 @@ import styles2, { colors } from '../../lib/SliderSnap/index.style'
 import Carousel, { Pagination } from 'react-native-snap-carousel'
 import { sliderWidth, itemWidth } from '../../lib/SliderSnap/SliderEntry.style'
 import { scrollInterpolators, animatedStyles } from '../../lib/SliderSnap/animations'
-import SliderEntry from '../../lib/SliderSnap/SliderEntry'
+import { ChildSlider } from '../Explorer/ChildComponents'
+// import RenderCamera from './Camera'
 const { height, width } = Dimensions.get('window')
-
+const ImagePicker = require('react-native-image-picker')
 // https://www.codementor.io/blessingoraz/access-camera-roll-with-react-native-9uwupuuy0
 class CameraRollView extends PureComponent {
 
@@ -36,6 +37,7 @@ class CameraRollView extends PureComponent {
       images: [],
       videos: [],
       selected: [],
+      slider1ActiveSlide: 1,
       fetchParamsImage: { first: 111, assetType: 'Photos' },
       fetchParamsVideo: { first: 111, assetType: 'Videos' },
       showLoading: false
@@ -92,16 +94,6 @@ class CameraRollView extends PureComponent {
       </Button>
     )
   }
-
-  RenderBigImages = (img) =>
-    <Image style={[styles.bigImage, {
-      width: 0.98 * width,
-      marginHorizontal: 5,
-      marginVertical: 3
-    }]}
-      source={{ uri: img }}
-      resizeMode="cover" />
-
   GetListImagesSelected = (imgSelected) => {
     let images = this.state.images.filter(img => {
       if (imgSelected.indexOf(img.uri) !== -1) return img
@@ -118,24 +110,26 @@ class CameraRollView extends PureComponent {
   }
   customExample(data, refNumber = 1) {
     const isEven = refNumber % 2 === 0
-
     // Do not render examples on Android because of the zIndex bug, they won't work as is
     return (
-      <View style={[{ flex: 1 }, styles.bigImage]}>
+      <View style={[{ flex: 1, height: 0.4 }]}>
         <Carousel
           data={data}
-          renderItem={({ item, index }) => < SliderEntry
-            data={item} even={(index + 1) % 2 === 0} />}
-          sliderWidth={width}
-          itemWidth={0.85 * width}
+          renderItem={({ item, index }) => <ChildSlider
+            data={item} even={false}
+            onPressed={() => { }}
+            style={{ height: 0.5 * height, width }} />}
+          sliderWidth={width * 0.8}
+          itemWidth={0.75 * width}
           loop={true}
-          // containerCustomStyle={styles2.slider}
-          // contentContainerCustomStyle={styles2.sliderContentContainer}
+          hasParallaxImages={true}
+          containerCustomStyle={[styles2.slider, { marginTop: 0 }]}
+          contentContainerCustomStyle={[styles2.sliderContentContainer,
+          { paddingTop: 35, paddingHorizontal: 5 }]}
           scrollInterpolator={scrollInterpolators[`scrollInterpolator${refNumber}`]}
           slideInterpolatedStyle={animatedStyles[`animatedStyles${refNumber}`]}
           useScrollView={true}
         />
-        {/* {this.RenderBigImages(data.url)} */}
       </View>
     )
   }
@@ -158,14 +152,10 @@ class CameraRollView extends PureComponent {
     })
     return (
       <View style={{ flex: 1 }}>
-        <HeaderCustom
-          // centerComponent={
-          //   <LogoTitle text={"Create Post".toUpperCase()}
-          //     style={{ color: "#aaa" }} />
-          // }
+        <HeaderCustom style={{ height: 30 }}
           leftComponent={
             <Button onPress={() => this.props.navigation.navigate('Feeds')} >
-              <H2 text="Back" style={{
+              <H1 text="Back" style={{
                 textDecorationLine: 'underline',
                 fontWeight: 'normal'
               }} />
@@ -173,23 +163,15 @@ class CameraRollView extends PureComponent {
           rightComponent={
             <Button onPress={() => this.props.navigation.navigate('Upload',
               { sender: this.GetListImagesSelected(this.state.selected) })}>
-              <H2 text="Publish" style={{
-                textDecorationLine: 'underline',
-                fontWeight: 'normal'
-              }} />
+              <Icon name={'ios-arrow-forward'} size={27} />
             </Button>
           } />
         <View style={[styles.bigImage]}>
-          {/* {this.customExample(imageRender)} */}
-          <FlatList
-            data={this.state.selected}
-            keyExtractor={(item, index) => index.toString()}
-            horizontal
-            style={styles.bigImage}
-            // numColumns={3}
-            renderItem={({ item }) => this.RenderBigImages(item)} />
+          {this.customExample(imageRender)}
         </View>
-        <ScrollTabIcons tabBarPosition="bottom" style={{ paddingTop: 3, height: 45 }}>
+        <ScrollTabIcons tabBarPosition="bottom" initialPage={1}
+          style={{ paddingTop: 3, height: 45 }}>
+          <RenderCamera tabLabel="Camera" />
           <RenderPicker tabLabel="Image" />
           <RenderPicker tabLabel="Video" />
         </ScrollTabIcons>
@@ -223,6 +205,21 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   }
-});
+})
+class RenderCamera extends PureComponent {
+  constructor(props) {
+    super(props)
+  }
+  renderCamera() {
+    // ImagePicker.launchCamera({})
+  }
+  render() {
+    return (
+      <View style={{ flex: 1 }}>
+
+      </View>
+    )
+  }
+}
 
 export default CameraRollView
