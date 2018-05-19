@@ -14,22 +14,23 @@ import MediaLoading from '../../lib/MediaLoading'
 import Button from '../../lib/commons/Button'
 import AsyncImage from '../../lib/commons/AsyncImage'
 import { getAllExplores, fetchExploreAll, getCurrentExploresLock } from '../../store/explore'
-import { getUsers } from '../../store/user'
-import { getOwnerID } from '../../store/auth'
+import { getUsers, searchUserInfo, getUsersSearched } from '../../store/user'
 import { connect } from 'react-redux'
-import BottomLoader from '../../lib/commons/BottomLoader'
-import { getUsersEmotion } from '../../store/emotion'
 import OtherEmotion from '../Feeds/Emotion'
-import { resizeImageByWidth } from '../../utils/func'
+import debounce from 'lodash/debounce'
+import SearchList from './SearchList'
 const { width } = Dimensions.get('window')
 const objectPath = require('object-path')
 
-export default class SearchView extends Component {
+class SearchView extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      isRefreshing: false
+      isRefreshing: false,
+      isVisible: false,
+      text: ''
     }
+    this.doSearching = debounce(this.doSearching.bind(this), 200)
   }
 
   static navigationOptions = {
@@ -40,19 +41,60 @@ export default class SearchView extends Component {
     let getPostId = item.id
     this.props.navigation.navigate('Explore', { post_id: getPostId })
   }
+  doSearching(text) {
+    this.props.searchUserInfo(text)
+    // searchUserInfo(text).then(data => {
+    //   let { users } = data
 
+    // })
+  }
+
+  onFocus() {
+    this.setState({
+      isVisible: true
+    }, () => {
+      this.props.searchingData(true)
+    })
+  }
+  async onChangeText(text = '') {
+    if (text.trim() === '') return
+    this.doSearching(text)
+  }
+  onCancel() {
+    this.setState({
+      isVisible: false,
+    }, () => {
+      this.props.searchingData(false)
+    })
+  }
   render() {
-    let { emotions } = this.props
+    let { emotions, userSearch } = this.props
     return (
       <View style={{ marginTop: 10, flex: 1, backgroundColor: 'transparent' }}>
         <SearchInput
           ref="search_box"
           backgroundColor="transparent"
+          onFocus={this.onFocus.bind(this)}
+          onChangeText={this.onChangeText.bind(this)}
+          onCancel={this.onCancel.bind(this)}
+          titleCancelColor="#bbb"
         // cancelButtonStyle={{ color: '#bbb' }}
         />
+        <SearchList isVisible={this.state.isVisible} userSearch={userSearch}
+          navigation={this.props.navigation} />
         <OtherEmotion emotions={emotions} style={{ backgroundColor: 'transparent' }} />
         {/* {explores.length > 0 ? RenderView : RenderLoading} */}
       </View>
     )
   }
 }
+
+let mapStateToProps = state => {
+  return {
+    userSearch: getUsersSearched(state)
+  }
+}
+
+export default connect(mapStateToProps, {
+  searchUserInfo
+})(SearchView)

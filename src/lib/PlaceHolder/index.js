@@ -5,16 +5,17 @@ import Placeholder from 'rn-placeholder'
 class PlaceHolderFeed extends Component {
   render() {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={[this.props.isReady ? { flex: 1 } : this.props.style]}>
         <Placeholder.ImageContent
-          onReady={this.props.isReady}
-          lineNumber={2}
+          onReady={!!this.props.isReady}
+          lineNumber={4}
           animate="shine"
-          lastLineWidth="40%"
+          lastLineWidth="100%"
+          firstLineWidth="20%"
         >
           {this.props.children}
         </Placeholder.ImageContent>
-      </View >
+      </View>
     )
   }
 }

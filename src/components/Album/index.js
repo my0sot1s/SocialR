@@ -1,14 +1,18 @@
 import React from 'react'
-import { View, FlatList, Image, Dimensions, ImageBackground } from 'react-native'
+import { View, FlatList, Image, Dimensions, ImageBackground, AlertIOS } from 'react-native'
 import Button from '../../lib/commons/Button'
 import { H2, H3 } from '../../lib/commons/H'
 import AsyncImage from '../../lib/commons/AsyncImage'
-import { fetchAlbum } from '../../api/album'
+import { fetchAlbum, createAlbum } from '../../api/album'
 import { connect } from 'react-redux'
 import { getOwnerID } from '../../store/auth'
 import { flexCenter } from '../../lib/commons/themes'
 import Icon from 'react-native-vector-icons/Ionicons'
 import LPModal from '../DetailModal'
+import ImagePicker from 'react-native-image-picker'
+import { uploadSingleImage } from '../../api/upload'
+import Modal from 'react-native-modal'
+import Loading from '../../lib/commons/Loading'
 let { width, height } = Dimensions.get('screen')
 
 class ChildAlbum extends React.PureComponent {
@@ -47,16 +51,78 @@ class ChildAlbum extends React.PureComponent {
 }
 
 class Album extends React.PureComponent {
+  constructor(props) {
+    super(props)
+    this.uploadImageToAlbum = this.uploadImageToAlbum.bind(this)
+    this.albumName = 'no.name'
+  }
   state = {
     data: [],
     isVisible: false,
-    selected: {}
+    selected: {},
+    uploading: false
   }
+
   async componentDidMount() {
-    let albumData = await fetchAlbum(this.props.ownerId, -100, '')
+    this.pickerAvatar = this.pickerAvatar.bind(this)
+    let albumData = await fetchAlbum(this.props.uid, -100, '')
     this.setState({
       data: albumData.albums
     })
+  }
+  async uploadImageToAlbum(media) {
+    let mediasUploaded = await uploadSingleImage(media)
+    let res = await createAlbum(this.albumName, this.props.uid, [mediasUploaded])
+    let albumData = await fetchAlbum(this.props.uid, -100, '')
+    this.setState({
+      data: albumData.albums,
+      uploading: false
+    })
+  }
+  async pickerAvatar() {
+    let options = {
+      title: 'Select Image',
+      customButtons: [
+      ],
+      storageOptions: {
+        skipBackup: true,
+        path: 'images'
+      }
+    }
+    await ImagePicker.showImagePicker(options, async (response) => {
+      console.log('Response = ', response)
+      if (response.didCancel) {
+        console.log('User cancelled photo picker')
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error)
+      } else {
+        this.setState({
+          uploading: true
+        })
+        let source = { uri: response.uri }
+        // if (!checkImage(response.uri)) return
+        let imageData = {
+          uri: response.origURL,
+          filename: response.fileName
+        }
+        await this.uploadImageToAlbum(imageData)
+      }
+    })
+  }
+  createAlbum() {
+    AlertIOS.prompt('Album Name',
+      text => this.albumName = text,
+      [
+        {
+          text: 'Create Now',
+          onPress: async () => await this.pickerAvatar()
+        },
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        }
+      ])
   }
   longPress(item) {
     this.setState({
@@ -78,6 +144,9 @@ class Album extends React.PureComponent {
         <LPModal isVisible={isVisible}
           selected={selected}>
         </LPModal>
+        <Modal isVisible={this.state.uploading}>
+          <Loading type='ThreeBounce' style={{ backgroundColor: 'transparent' }} />
+        </Modal>
         <FlatList
           ListHeaderComponent={() =>
             <View style={{ height: width / 4 }}>
@@ -85,7 +154,7 @@ class Album extends React.PureComponent {
                 width: width / 4, height: width / 4,
                 borderWidth: 1, borderColor: '#eee',
                 backgroundColor: '#eee'
-              }]}>
+              }]} onPress={this.createAlbum.bind(this)}>
                 <Icon name="ios-add" size={30} />
               </Button>
             </View>}
@@ -102,7 +171,9 @@ class Album extends React.PureComponent {
   }
 }
 let mapStateToProps = state => {
-  return { ownerId: getOwnerID(state) }
+  return {
+    // ownerId: getOwnerID(state)
+  }
 }
 
 export default connect(mapStateToProps)(Album)

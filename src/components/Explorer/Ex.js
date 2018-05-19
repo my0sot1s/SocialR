@@ -17,6 +17,8 @@ import { getUsersEmotion } from '../../store/emotion'
 import OtherEmotion from '../Feeds/Emotion'
 import { resizeImageByWidth } from '../../utils/func'
 import { Ex2Ex, Ex } from './ChildComponents'
+import Modal from 'react-native-modal'
+import Loading from '../../lib/commons/Loading'
 const objectPath = require('object-path')
 
 class ExEx extends React.PureComponent {
@@ -29,11 +31,17 @@ class ExEx extends React.PureComponent {
   }
   static navigationOptions() {
     return {
-      header: null
+      header: null,
+      isSearching: false,
+      loadding: false
     }
   }
   async componentDidMount() {
+    this.setState({ loadding: true })
     await this.props.fetchExploreAll()
+  }
+  componentWillReceiveProps(newProps) {
+    this.state.loadding && newProps.explores.length > 0 && this.setState({ loadding: false })
   }
   async checkSlideShow(index) {
     console.log('index', index)
@@ -45,9 +53,12 @@ class ExEx extends React.PureComponent {
     if (!this.props.locked)
       await this.props.fetchExploreAll()
   }
+  searchingData(s) {
+    this.setState({ isSearching: s })
+  }
   render() {
     let { explores, emotions, users } = this.props
-    let { imageBackground } = this.state
+    let { imageBackground, isSearching } = this.state
     return (
       <View style={[styles.container]}>
         <StatusBar
@@ -55,21 +66,35 @@ class ExEx extends React.PureComponent {
           backgroundColor={'#eee'}
           barStyle={'light-content'}
         />
-        <View style={styles.otherSide}>
-          <Search emotions={emotions} />
+        <Modal isVisible={this.state.loadding}>
+          <Loading type='ThreeBounce' style={{ backgroundColor: 'transparent' }} />
+        </Modal>
+        <View style={isSearching ? { flex: 1 } : styles.otherSide}>
+          <Search emotions={emotions} 
+          searchingData={this.searchingData.bind(this)}
+          navigation={this.props.navigation} />
         </View>
-        {explores && explores.length > 0 ? <Ex
-          data={explores}
-          itemHeight={slideHeight}
-          sliderHeight={slideHeight * 1.2}
-          renderItem={({ item }) => <Ex2Ex data={item} even={false} users={users} />}
-          vertical={true}
-          containerCustomStyle={styles.slider}
-          contentContainerCustomStyle={styles.sliderContentContainer}
-          refNumber={2}
-          onSnapToItem={(index) => this.checkSlideShow(index)}
-        /> : <View />}
-      </View>
+        {
+          explores && explores.length > 0 ? <Ex
+            data={explores}
+            itemHeight={slideHeight}
+            sliderHeight={slideHeight * 1.2}
+            sliderWidth={sliderWidth}
+            itemWidth={itemWidth}
+            inactiveSlideScale={0.95}
+            inactiveSlideOpacity={1}
+            enableMomentum={true}
+            vertical={true}
+            renderItem={({ item }) =>
+              <Ex2Ex data={item} even={false} users={users}
+                navigation={this.props.navigation} />}
+            containerCustomStyle={styles.slider}
+            contentContainerCustomStyle={styles.sliderContentContainer}
+            refNumber={2}
+            onSnapToItem={(index) => this.checkSlideShow(index)}
+          /> : <View />
+        }
+      </View >
     )
   }
 }

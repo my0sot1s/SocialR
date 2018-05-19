@@ -100,6 +100,7 @@ export default class example extends Component {
           sliderHeight={400}
           inactiveSlideOpacity={1}
           enableMomentum={true}
+          vertical={true}
           activeSlideAlignment={'start'}
           containerCustomStyle={styles.slider}
           contentContainerCustomStyle={styles.sliderContentContainer}
@@ -186,14 +187,14 @@ export default class example extends Component {
             scrollEventThrottle={200}
             directionalLockEnabled={true}
           >
-            {/* {example1}
+            {example1}
             {example2}
             {example3}
             {example4}
-            {example5} */}
-            {example6}
-            {/* {example7}
-            {example8} */}
+            {example5}
+            {/* {example6} */}
+            {example7}
+            {example8}
           </ScrollView>
         </View>
       </SafeAreaView>

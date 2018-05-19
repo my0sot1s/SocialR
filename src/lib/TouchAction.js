@@ -10,20 +10,19 @@ import { fetch2Comments } from '../api/comment'
 import { getOwner, getOwnerID } from '../store/auth'
 import { fetchMultipleUsers, getUsers } from '../store/user'
 import { connect } from 'react-redux'
+import { hitLikeNow } from '../store/like'
 const cloneDeep = require('lodash/cloneDeep')
 const objectPath = require('object-path')
 
 // https://github.com/EstebanFuentealba/react-native-share
 const styles = StyleSheet.create({
   container: {
-    height: 35,
+    flex: 1,
     width: '100%',
     display: "flex",
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    // borderWidth: 1,
-    // marginHorizontal: 12
   },
   common: {
     // flex: 1,
@@ -48,6 +47,7 @@ class TouchAction extends PureComponent {
     visible: false,
     shareOptions: {},
     newerComments: [],
+    expanded: false
   }
   onCancel() {
     console.log("CANCEL")
@@ -62,14 +62,18 @@ class TouchAction extends PureComponent {
   }
   async extraComments() {
     const { ownerId, pid } = this.props
+    if (this.state.expanded) {
+      this.props.navigation.navigate('Comment', { pid })
+      return
+    }
     let newerComments = await fetch2Comments(ownerId, pid)
-    console.log({ newerComments })
     let comments = objectPath.get(newerComments, 'comment', [])
     let listIds = comments.map(v => {
       return v.id
     })
     this.setState({
-      newerComments: comments
+      newerComments: comments,
+      expanded: true
     })
     await fetchMultipleUsers(comments)
   }
@@ -85,10 +89,13 @@ class TouchAction extends PureComponent {
   sendToComment() {
     if (this.isPressComment) return
     this.isPressComment = true
-    this.props.navigation.navigate('Comment', { pid: this.props.pid })
+    this.props.navigation.navigate('Comment', { pid: this.props.pid, title: this.props.text })
     this.isPressComment = false
   }
-
+  async pressToLike() {
+    let { ownerId, hitLikeNow, pid } = this.props
+    await hitLikeNow(ownerId, pid)
+  }
   render() {
     let commentBox
     let { newerComments } = this.state
@@ -116,16 +123,15 @@ class TouchAction extends PureComponent {
     let iconDefined = ['ios-chatbubbles-outline', 'ios-paper-plane-outline', 'blank', 'ios-archive-outline']
     let eventDefined = [this.sendToComment, this.Shared.bind(this), this.Shared]
     return (
-      <View style={[styles.container, { flexDirection: 'column', height: 100, marginTop: 3 }]}>
-
+      <View style={[styles.container, { flexDirection: 'column', marginTop: 3 }]}>
         <View style={styles.container}>
           <View style={[styles.common,
           styles.container, { flexBasis: 13 + '%' }]}>
-            <ZButton onPress={() => { }} style={{ width: '100%' }}>
+            <ZButton onPress={this.pressToLike.bind(this)} style={{ width: '100%' }}>
               <Icon
                 name={this.props.isliked ? 'ios-heart' : 'ios-heart-outline'}
                 size={30}
-                color={this.props.isliked ? '#f44295' : '#444'}
+                color={this.props.isliked ? '#ed4956' : '#444'}
                 style={{ padding: 3 }} />
             </ZButton>
           </View>
@@ -137,7 +143,7 @@ class TouchAction extends PureComponent {
                   name={icon}
                   color="#444"
                   style={{ padding: 3 }}
-                  size={32} />
+                  size={30} />
               </ZButton>
             </View> :
               <View style={[styles.common, styles.container, { flexBasis: '46%' }]} key={index}>
@@ -177,6 +183,8 @@ let mapStateToProps = state => {
   }
 }
 export default connect(
-  mapStateToProps,
-  { fetchMultipleUsers }
+  mapStateToProps, {
+    fetchMultipleUsers,
+    hitLikeNow
+  }
 )(TouchAction)

@@ -35,7 +35,6 @@ class ModalShow extends Component {
   }
   mainExample(mediaShow) {
     let listMedias = this.getMedia(mediaShow)
-    // debugger
     return (
       <View style={styles.exampleContainer}>
         <View style={[flexCenter, {

@@ -1,7 +1,8 @@
 import {
   call, takeLatest, put,
   select,
-  all
+  all,
+  takeEvery
 } from 'redux-saga/effects'
 import { getOwnerID } from './auth'
 import { getMePosts } from '../api/post'
@@ -14,6 +15,9 @@ export const FETCH_ME_POST_FALURE = 'FETCH_ME_POST_FALURE'
 export const FETCH_ME_POST_REFRESH = 'FETCH_ME_POST_REFRESH'
 export const FETCH_ME_POST_REFRESH_SUCCESSFUL = 'FETCH_ME_POST_REFRESH_SUCCESSFUL'
 export const FETCH_ME_POST_REFRESH_FALURE = 'FETCH_ME_POST_REFRESH_FALURE'
+export const REMOVE_ALL = 'REMOVE_ALL'
+export const REMOVE_ALL_SUCCESS = 'REMOVE_ALL_SUCCESS'
+
 const objectPath = require('object-path')
 let listReqLikeInfo = []
 const initState = {
@@ -29,18 +33,27 @@ const initState = {
 export function* watchFetchMePosts() {
   yield takeLatest(FETCH_ME_POST, fetchMePosts)
 }
+export function* watchRemoveALl() {
+  yield takeEvery(REMOVE_ALL, removeAllData)
+}
 
 export function* watchFetchRefreshMePosts() {
   yield takeLatest(FETCH_ME_POST_REFRESH, fetchRefreshMePosts)
 }
 
-export function* fetchMePosts() {
+export function* removeAllData() {
+  yield put({
+    type: REMOVE_ALL_SUCCESS
+  })
+}
+
+export function* fetchMePosts({ uid }) {
   try {
     let lock = yield select(getMeCurrentLock)
     if (lock) return
     let anchor = yield select(getMeCurrentAnchor)
     let limit = yield select(getMeCurrentLimit)
-    let uid = yield select(getOwnerID)
+    // let uid = yield select(getOwnerID)
 
     // console.log('anchor', anchor)
     const json = yield call(getMePosts, {
@@ -75,16 +88,16 @@ export function* fetchMePosts() {
   }
 }
 
-export function* fetchRefreshMePosts() {
+export function* fetchRefreshMePosts(uid) {
   try {
     let topAnchor = yield select(getMeCurrentTopAnchor)
     let limit = yield select(getMeCurrentLimit)
-    let uid = yield select(getOwnerID)
+    // let uid = yield select(getOwnerID)
 
     // console.log('anchor', anchor)
     const json = yield call(getMePosts, {
       uid,
-      limit: -Math.abs(limit),
+      limit: Math.abs(limit),
       anchor: topAnchor
     })
     listReqLikeInfo.length = 0
@@ -151,19 +164,26 @@ export const meReducers = (state = initState, { type, data, error }) => {
       return {
         ...state, error: data
       }
+    case REMOVE_ALL_SUCCESS:
+      return initState
     default:
       return state
   }
 }
 
-export const fetchMePostsAll = () => {
+export const fetchMePostsAll = (uid) => {
   return {
-    type: FETCH_ME_POST
+    type: FETCH_ME_POST, uid
   }
 }
-export const fetchRefreshMePostsAll = () => {
+export const fetchRefreshMePostsAll = (uid) => {
   return {
-    type: FETCH_ME_POST_REFRESH
+    type: FETCH_ME_POST_REFRESH, uid
+  }
+}
+export const removeAll = () => {
+  return {
+    type: REMOVE_ALL
   }
 }
 

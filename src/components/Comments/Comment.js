@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { View, KeyboardAvoidingView, Dimensions, Keyboard } from 'react-native'
 import { H2, H1 } from '../../lib/commons/H'
 import Button from '../../lib/commons/Button'
-import ListActivities, { SimpleTableView } from '../../lib/ListViewAvatar'
+import { SimpleTableView } from '../../lib/ListViewAvatar'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { connect } from 'react-redux'
@@ -28,24 +28,7 @@ class Comment extends Component {
     return {
       header: null
     }
-    // return {
-    //   headerTitle: <LogoTitle text={"Comments".toUpperCase()} />,
-    //   headerLeft: (
-    //     <Button onPress={() => {
-    //       navigation.goBack();
-    //       Keyboard.dismiss
-    //     }}>
-    //       <Icon name="label" size={50} style={{ transform: [{ rotate: '180deg' }] }} color="#ddd" />
-    //       {/* <Ionicons name="ios-arrow-dropleft-outline" size={35} */}
-    //       {/* style={{}} color="#ddd" /> */}
-    //     </Button>
-    //   )
-    // }
   }
-
-
-
-
   async componentDidMount() {
 
     let { pid } = this.props.navigation.state.params
@@ -72,14 +55,14 @@ class Comment extends Component {
     })
   }
   render() {
-    let { userLists } = this.props
+    let { userLists, navigation } = this.props
     let { fetching, comments } = this.state
     return (
       <KeyboardAvoidingView
         style={{ position: 'relative', height }}
         behavior="padding">
 
-        <HeaderCustom centerComponent={<LogoTitle text={"Comments".toUpperCase()} />}
+        <HeaderCustom centerComponent={<LogoTitle text={navigation.state.params.title || "Comments".toUpperCase()} />}
           leftComponent={<Button onPress={() => {
             this.props.navigation.goBack();
             Keyboard.dismiss
@@ -92,7 +75,8 @@ class Comment extends Component {
             <NoData text="Opp! Không có comments " />
             : <SimpleTableView
               comments={comments}
-              users={userLists} />}
+              users={userLists}
+              owner={this.props.owner} />}
           <CommentBox user={this.props.owner}
             handleSubmit={this.handleSubmit.bind(this)}
             style={{

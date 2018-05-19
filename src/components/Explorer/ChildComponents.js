@@ -5,7 +5,8 @@ import { scrollInterpolators, animatedStyles } from '../../lib/SliderSnap/animat
 import {
   Platform, View, ScrollView, SafeAreaView,
   StatusBar, TouchableOpacity, Image,
-  Dimensions
+  Dimensions,
+  ImageBackground
 } from 'react-native'
 import Button from '../../lib/commons/Button'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -14,6 +15,7 @@ import CircleImage from '../../lib/commons/CircleImage'
 import { flexCenter } from '../../lib/commons/themes'
 import { H3, H4 } from '../../lib/commons/H'
 import DModal from '../DetailModal'
+import Video from '../../lib/Video/Video'
 const objectPath = require('object-path')
 
 export class Ex extends React.PureComponent {
@@ -24,11 +26,11 @@ export class Ex extends React.PureComponent {
         sliderWidth={sliderWidth}
         itemWidth={itemWidth}
         // loop={true}
-        containerCustomStyle={styles.slider}
-        contentContainerCustomStyle={styles.sliderContentContainer}
-        scrollInterpolator={scrollInterpolators[`scrollInterpolator${refNumber}`]}
-        slideInterpolatedStyle={animatedStyles[`animatedStyles${refNumber}`]}
-        useScrollView={true}
+        // containerCustomStyle={styles.slider}
+        // contentContainerCustomStyle={styles.sliderContentContainer}
+        // scrollInterpolator={scrollInterpolators[`scrollInterpolator${refNumber}`]}
+        // slideInterpolatedStyle={animatedStyles[`animatedStyles${refNumber}`]}
+        // useScrollView={true}
         {...this.props}
       />
 
@@ -52,6 +54,9 @@ export class Ex2Ex extends React.PureComponent {
         selected: {}
       })
     }, 2500)
+  }
+  checkProfile(user) {
+    this.props.navigation.navigate('Profile', { uid: user.id })
   }
   render() {
     let { data, users } = this.props
@@ -80,7 +85,8 @@ export class Ex2Ex extends React.PureComponent {
           backgroundColor: 'rgba(0, 0, 0,0.4)',
           marginHorizontal: 8
         }]}>
-          <Button style={{ flexBasis: '30%', alignContent: 'flex-start' }}>
+          <Button style={{ flexBasis: '30%', alignContent: 'flex-start' }}
+            onPress={this.checkProfile.bind(this, user)}>
             {user && user.avatar ? <CircleImage
               source={{ uri: objectPath.get(user, 'avatar', '') }}
               resizeMode="center"
@@ -90,7 +96,7 @@ export class Ex2Ex extends React.PureComponent {
                 resizeMode="center"
                 size={20} />}
             <View style={{ marginLeft: 5 }}>
-              <H3 text={objectPath.get(user, 'username', '')} />
+              <H3 text={objectPath.get(user, 'fullname', '')} />
             </View>
           </Button>
           <View style={{ flex: 5 }}>
@@ -130,23 +136,31 @@ export class ChildSlider extends React.PureComponent {
       <Image
         source={{ uri: url }}
         style={styles.image}
-        resizeMode="cover"
+        resizeMode="contain"
       />
   }
-
+  checkRenderVideo(data) {
+    return objectPath.get(data, 'format') === 'mp4'
+  }
   render() {
-    const { even, style, data } = this.props
+    const { even, style, data, data: { url } } = this.props
     return (
-      <TouchableOpacity
+      !this.checkRenderVideo(data) ? <TouchableOpacity
         activeOpacity={1}
         style={[styles.slideInnerContainer, style]}
         onPress={this.props.onPressed.bind(this, this.props.data)}
       >
         <View style={styles.shadow} />
-        <View style={[styles.imageContainer, even ? styles.imageContainerEven : {}]}>
+        <ImageBackground
+          style={[styles.imageContainer, even ? styles.imageContainerEven : {},
+          { backgroundColor: '#bcbcbc' }]}
+          source={{ uri: url }}
+          blurRadius={7}>
           {this.image}
-        </View>
-      </TouchableOpacity>
+        </ImageBackground>
+      </TouchableOpacity> :
+        <Video style={styles.slideInnerContainer}
+          source={{ uri: data.url }} />
     )
   }
 }

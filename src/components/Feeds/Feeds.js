@@ -11,7 +11,6 @@ import Emotions from './Emotion'
 import { connect } from 'react-redux'
 import BottomLoader from '../../lib/commons/BottomLoader'
 import { H2 } from '../../lib/commons/H'
-import PlaceHolder from '../../lib/PlaceHolder'
 import {
   fetchFeedAll,
   fetchFeedRefreshAll,
@@ -56,7 +55,6 @@ class InitScreen extends PureComponent {
   }
   render() {
     let { feeds, users, uid, emotions } = this.props
-    if (feeds.length === 0 || users.length === 0) return <Loading />
     return (
       <View style={styles.mainContent}>
         <FlatList

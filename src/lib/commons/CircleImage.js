@@ -9,7 +9,7 @@ class CircleImage extends PureComponent {
         height: this.props.size + 4,
         borderRadius: (this.props.size + 4) / 2,
         borderWidth: 2,
-        borderColor: '#f44295'
+        borderColor: '#ed4956'
       }]} >
         <Image source={this.props.source}
           resizeMode={this.props.resizeMode}

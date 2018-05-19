@@ -4,11 +4,10 @@ import { flexCenter } from '../../lib/commons/themes'
 import CircleImage from '../../lib/commons/CircleImage'
 import { H1, H2, H4 } from '../../lib/commons/H'
 import Button from '../../lib/commons/Button'
-import { getOwner, logoutAccount } from '../../store/auth'
+import { logoutAccount, getOwnerID } from '../../store/auth'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { connect } from 'react-redux'
 import ScrollableTabView from '../../lib/TabBar/ScrollTab'
-import ListActivities from '../../lib/ListViewAvatar'
 import ScrollTabIcon, { ScrollViewItem, styles } from '../../lib/TabBar/ScrollTabIcon'
 const objectPath = require('object-path')
 let { width, height } = Dimensions.get('screen')
@@ -18,8 +17,12 @@ class Owner extends React.PureComponent {
     this.props.logoutAccount()
     this.props.navigation.navigate('Auth')
   }
+  async doFollowNow(action, user) {
+    await this.props.doFollow(action, user)
+  }
   render() {
-    let { owner } = this.props
+    let { owner, isFollow, ownerId } = this.props
+    let ifollow = objectPath.get(isFollow, 'isFollow', true)
     return (
       <View style={[flexCenter, {
         // flexDirection: 'column'
@@ -34,31 +37,42 @@ class Owner extends React.PureComponent {
         </View>
         <View style={[flexCenter, { width: 0.65 * width, flexDirection: 'column', height: 0.16 * height }]}>
           <View style={[flexCenter]}>
-            <H1 text={objectPath.get(owner, 'username')} />
+            <H1 text={`${objectPath.get(owner, 'fullname', owner.username)}(${owner.username})`} />
           </View>
           <View style={{ alignSelf: 'flex-start', alignItems: 'flex-end', marginTop: 10 }}>
             <View style={[flexCenter]}>
-              <Button style={[flexCenter, {
+              {!ifollow ? < Button style={[flexCenter, {
                 height: 30,
-                width: 70,
+                flex: 1,
+                // width: 70,
                 borderRadius: 20,
                 backgroundColor: '#ccc',
                 marginRight: 5
-              }]}>
+              }]} onPress={this.doFollowNow.bind(this, 'follow', owner.id)}>
                 <H4 text={'follow'.toUpperCase()} style={{ color: '#fff' }} />
-              </Button>
-              <Button style={[flexCenter, {
+              </Button> : ownerId === owner.id ? <View></View> : <Button style={[flexCenter, {
                 height: 30,
-                width: 50,
+                flex: 1,
+                // width: 70,
+                borderRadius: 20,
+                backgroundColor: '#ccc',
+                marginRight: 5
+              }]} onPress={this.doFollowNow.bind(this, 'unfollow', owner.id)}>
+                <H4 text={'unfollow'.toUpperCase()} style={{ color: '#fff' }} /></Button>}
+              {ownerId === owner.id ? <Button style={[flexCenter, {
+                height: 30,
+                // width: 50,
+                flex: 1,
                 borderRadius: 20,
                 backgroundColor: '#ccc',
                 marginRight: 5
               }]} onPress={this.logoutNow.bind(this)}>
                 <Icon name="ios-exit-outline" size={25} color='#fff' />
-              </Button>
+              </Button> : <View></View>}
               <View style={[flexCenter, {
                 height: 30,
-                width: 55,
+                // width: 55,
+                flex: 1,
                 borderRadius: 20,
                 backgroundColor: '#ccc'
               }]}>
@@ -68,13 +82,14 @@ class Owner extends React.PureComponent {
             </View>
           </View>
         </View>
-      </View>
+      </View >
     )
   }
 }
-let mapStateToProps = state => {
+
+let mapStateToProps = (state) => {
   return {
-    owner: getOwner(state)
+    ownerId: getOwnerID(state)
   }
 }
 export default connect(mapStateToProps, {

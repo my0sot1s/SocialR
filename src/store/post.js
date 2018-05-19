@@ -1,7 +1,8 @@
 import {
   call, takeLatest, put,
   select,
-  all
+  all,
+  takeEvery
 } from 'redux-saga/effects'
 import { getFeedPosts } from '../api/post'
 import { LIKE_INFO } from '../store/like'
@@ -13,6 +14,8 @@ export const FETCH_POST_FALURE = 'FETCH_POST_FALURE'
 export const FETCH_POST_REFRESH = 'FETCH_POST_REFRESH'
 export const FETCH_POST_REFRESH_SUCCESSFUL = 'FETCH_POST_REFRESH_SUCCESSFUL'
 export const FETCH_POST_REFRESH_FALURE = 'FETCH_POST_REFRESH_FALURE'
+export const REMOVE_ALL_FEED = 'REMOVE_ALL_FEED'
+export const REMOVE_ALL_FEED_SUCCESS = 'REMOVE_ALL_FEED_SUCCESS'
 const objectPath = require('object-path')
 let listReqLikeInfo = []
 const initState = {
@@ -26,13 +29,22 @@ const initState = {
 }
 
 export function* watchFetchFeeds() {
-  yield takeLatest(FETCH_POST, fetchFeeds)
+  yield takeEvery(FETCH_POST, fetchFeeds)
 }
 
 export function* watchFetchRefreshFeeds() {
   yield takeLatest(FETCH_POST_REFRESH, fetchRefreshFeeds)
 }
 
+export function* watchRemoveFeeds() {
+  yield takeEvery(REMOVE_ALL_FEED, removeFeeds)
+}
+
+export function* removeFeeds() {
+  yield put({
+    type: REMOVE_ALL_FEED_SUCCESS
+  })
+}
 export function* fetchFeeds() {
   try {
     let lock = yield select(getCurrentLock)
@@ -79,22 +91,24 @@ export function* fetchRefreshFeeds() {
     let topAnchor = yield select(getCurrentTopAnchor)
     let limit = yield select(getCurrentLimit)
     let uid = yield select(getOwnerID)
-
+    let allPost = yield select(getAllPosts)
     // console.log('anchor', anchor)
     const json = yield call(getFeedPosts, {
       uid,
-      limit: -Math.abs(limit),
+      limit: Math.abs(limit),
       anchor: topAnchor
     })
     listReqLikeInfo.length = 0
-    let listUid = json.posts.map(v => {
-      listReqLikeInfo.push(put({
-        type: LIKE_INFO,
-        uid: uid,
-        pid: v.id
-      }))
-      return v.user_id
-    })
+    let listUid = json.posts
+      .filter(f => !allPost.some(v => v.id === f.id))
+      .map(v => {
+        listReqLikeInfo.push(put({
+          type: LIKE_INFO,
+          uid: uid,
+          pid: v.id
+        }))
+        return v.user_id
+      })
     if (listUid.length === 0) return
     yield all([
       put({
@@ -150,6 +164,8 @@ export const feedReducers = (state = initState, { type, data, error }) => {
       return {
         ...state, error: data
       }
+    case REMOVE_ALL_FEED_SUCCESS:
+      return initState
     default:
       return state
   }
@@ -163,6 +179,11 @@ export const fetchFeedAll = () => {
 export const fetchFeedRefreshAll = () => {
   return {
     type: FETCH_POST_REFRESH
+  }
+}
+export const removeAll = () => {
+  return {
+    type: REMOVE_ALL_FEED
   }
 }
 

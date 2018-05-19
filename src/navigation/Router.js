@@ -5,10 +5,11 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import Feeds from '../components/Feeds/Feeds'
 import Comment from '../components/Comments/Comment'
 import Me from '../components/Me/me'
-import CameraRollView from '../components/Caputue/Capture'
+import PhotosPicker from '../components/Caputue/PhotosPicker'
 import Profile from '../components/ProfileInfo'
 import Search from '../components/Search/Search'
-import Login from '../components/Login'
+import Login from '../components/Auth/Login'
+import Register from '../components/Auth/Register'
 import Explore from '../components/Search/ExploresView'
 import UploadPost from '../components/Caputue/UploadPost'
 import Ex from '../components/Explorer/Ex'
@@ -40,6 +41,9 @@ const MainTabNavigation = TabNavigator({
         navigationOptions: {
           tabBarVisible: false
         }
+      },
+      Profile: {
+        screen: Me
       }
     }),
     navigationOptions: (props) => ({
@@ -53,13 +57,19 @@ const MainTabNavigation = TabNavigator({
   Search: {
     screen: StackNavigator({
       MainSearch: {
-        screen: Ex,
-        // navigationOptions: {
-        //   tabBarVisible: false
-        // }
+        screen: Ex
       },
       Explore: {
         screen: Explore
+      },
+      Profile: {
+        screen: Me
+      },
+      Comment: {
+        screen: Comment,
+        navigationOptions: {
+          tabBarVisible: false
+        }
       }
     }),
     navigationOptions: (props) => ({
@@ -74,7 +84,7 @@ const MainTabNavigation = TabNavigator({
   Capure: {
     screen: StackNavigator({
       MainCameraRollView: {
-        screen: CameraRollView,
+        screen: PhotosPicker,
         navigationOptions: {
           header: null,
           tabBarVisible: false
@@ -116,8 +126,8 @@ const MainTabNavigation = TabNavigator({
     })
   }
   // BasicInfo: {
-  //   // screen: Profile,
-  //   screen: Ex,
+  //   screen: Profile,
+  //   // screen: Ex,
   //   navigationOptions: (props) => ({
   //     tabBarIcon: ({ tintColor }) => (
   //       tintColor !== '#000'
@@ -131,6 +141,9 @@ const MainTabNavigation = TabNavigator({
 let AuthStack = StackNavigator({
   Login: {
     screen: Login
+  },
+  Register: {
+    screen: Register
   }
 })
 

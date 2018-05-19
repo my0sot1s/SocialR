@@ -50,3 +50,9 @@ export const getMePosts = async ({ owner, limit, anchor }) => {
   let json = await mePosts.json()
   return json
 }
+
+export const getPostById = async (owner, pid) => {
+  let post = await GetBlob(`post/${owner}/post/${pid}`)
+  let json = await post.json()
+  return json
+}

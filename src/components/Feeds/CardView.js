@@ -12,11 +12,14 @@ import Button from '../../lib/commons/Button'
 import { hitLikeNow } from '../../store/like'
 import { fetchCountComment } from '../../api/comment'
 import { getOwnerID } from '../../store/auth';
+import Ionicons from 'react-native-vector-icons/Ionicons'
+import PlaceHolder from '../../lib/PlaceHolder'
 import Carousel, { Pagination } from 'react-native-snap-carousel'
 import {
   styles, sliderWidth, itemWidth,
   colors, scrollInterpolators, animatedStyles
 } from '../Explorer/calculate'
+import Video from '../../lib/Video/Video'
 import { ChildSlider } from '../Explorer/ChildComponents'
 
 const objectPath = require('object-path')
@@ -25,7 +28,8 @@ class CardView extends React.PureComponent {
 
   state = {
     commentCount: 0,
-    slider1ActiveSlide: 1
+    slider1ActiveSlide: 1,
+    showHeart: false
   }
   async componentDidMount() {
     let { id, ownerId } = this.props.data
@@ -39,7 +43,10 @@ class CardView extends React.PureComponent {
     var delta = new Date().getTime() - this.lastPress
     if (delta < 250) {
       await hitLikeNow(ownerId, pid)
-      alert('liked')
+      this.setState({ showHeart: true })
+      setTimeout(() => {
+        this.setState({ showHeart: false })
+      }, 220)
     }
     this.lastPress = new Date().getTime()
   }
@@ -82,28 +89,38 @@ class CardView extends React.PureComponent {
       />
     )
   }
+  checkVideo(dataMedia) {
+    return dataMedia.length === 1 && objectPath.get(dataMedia, '0.format') === 'mp4'
+  }
   render() {
     let { data, users, ownerLiked, countLiked } = this.props
     let timeAgo = `${timeSince(new Date(data.created))} AGO`.toUpperCase()
+    let usr = users.find(u => u.id === data.user_id)
+
     return (
-      <View style={{ flex: 1, position: 'relative' }}>
-        <SlideHeader data={users.find(u => u.id === data.user_id)}
-          isliked={objectPath.get(ownerLiked, 'status')} />
-        <ImageSlider
-          onDoubleClick={this.onDoubleClick.bind(this, data.id)}
-          images={data.media}
-          style={{ width: 100 + '%', height: 300, zIndex: 10 }} />
-        {/* {this.mainExample(data.media)} */}
-        <TouchAction text={data.text}
-          tags={data.tags}
-          pid={data.id}
-          countLiked={countLiked}
-          commentCount={this.state.commentCount}
-          isliked={objectPath.get(ownerLiked, 'status')}
-          {...this.props} />
-        <H4 text={timeAgo}
-          style={{ color: '#545454', marginLeft: 15, marginVertical: 5 }} />
-      </View>
+      <PlaceHolder isReady={!!usr}
+        style={{ height: 200, paddingTop: 20, paddingLeft: 10 }}>
+        <View style={{ flex: 1, position: 'relative' }}>
+          <SlideHeader data={usr} navigation={this.props.navigation} />
+          {!this.checkVideo(data.media) ? <ImageSlider
+            onDoubleClick={this.onDoubleClick.bind(this, data.id)}
+            images={data.media}
+            style={{ width: 100 + '%', height: 300, zIndex: 10 }} /> :
+            <Video style={{ height: 300 }}
+              source={{ uri: data.media[0].url }} />}
+          {this.state.showHeart ? <LikeComponent /> : null}
+          {/* {this.mainExample(data.media)} */}
+          < TouchAction text={data.text}
+            tags={data.tags}
+            pid={data.id}
+            countLiked={countLiked}
+            commentCount={this.state.commentCount}
+            isliked={objectPath.get(ownerLiked, 'status')}
+            {...this.props} />
+          <H4 text={timeAgo}
+            style={{ color: '#545454', marginLeft: 15, marginVertical: 5 }} />
+        </View>
+      </PlaceHolder >
     )
   }
 }
@@ -117,3 +134,7 @@ const mapStateToProps = (state, ownerProp) => {
 export default connect(mapStateToProps, {
   hitLikeNow
 })(CardView)
+
+const LikeComponent = props => <View style={{ position: 'absolute', top: '30%', left: '35%' }}>
+  <Ionicons name='ios-heart' size={150} color='rgba(252, 252, 252,0.5)' />
+</View>

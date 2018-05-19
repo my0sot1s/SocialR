@@ -12,21 +12,21 @@ import { H1, H2, H3, H4 } from '../../lib/commons/H'
 import Button from '../../lib/commons/Button'
 import { flexCenter } from '../../lib/commons/themes'
 import Icon from 'react-native-vector-icons/Ionicons';
-import { styles } from './Capture'
+import { styles } from './PhotosPicker'
 import { LogoTitle } from '../Comments/Comment'
 import { connect } from 'react-redux'
 import { getOwnerID } from '../../store/auth'
-import uploadImageFiles from '../../api/upload'
+import uploadImageFiles, { uploadSingleVideo } from '../../api/upload'
 import Modal from 'react-native-modal'
 import Loading from '../../lib/commons/Loading'
 import { sendCreatePost } from '../../api/post'
 import HeaderCustom from '../../lib/commons/Header'
 const { height, width } = Dimensions.get('window')
 
-const DoUpload = async (imgs) => {
-  let fileInfo = await uploadImageFiles(imgs)
-  return fileInfo
-}
+// const DoUpload = async (imgs) => {
+//   let fileInfo = await uploadImageFiles(imgs)
+//   return fileInfo
+// }
 
 class ModalInside extends PureComponent {
   constructor(props) {
@@ -36,17 +36,15 @@ class ModalInside extends PureComponent {
     text: '',
     isVisibleModal: false
   }
+
   static navigationOptions = ({ navigation }) => {
     return {
       header: null
     }
   }
-  async CreatePost() {
-    Keyboard.dismiss()
-    await this.setState({ isVisibleModal: true })
-    let { sender } = this.props.navigation.state.params
-    let imagesInfo = await DoUpload(sender)
-    let tagDefault = ['test', 'auto']
+  async doUploadPhotos(sender = []) {
+    let imagesInfo = await uploadImageFiles(sender)
+    let tagDefault = ['test', 'photos']
     let uid = this.props.uid
     let formOk = await sendCreatePost({
       tags: tagDefault,
@@ -54,6 +52,25 @@ class ModalInside extends PureComponent {
       uid: uid,
       content: this.state.text
     })
+  }
+  async doUploadVideo(sender = {}) {
+    let videoInfo = await uploadSingleVideo(sender)
+    let tagDefault = ['test', 'video']
+    let uid = this.props.uid
+    let formOk = await sendCreatePost({
+      tags: tagDefault,
+      medias: [videoInfo],
+      uid: uid,
+      content: this.state.text
+    })
+  }
+  async CreatePost() {
+    Keyboard.dismiss()
+    await this.setState({ isVisibleModal: true })
+    let { sender } = this.props.navigation.state.params
+    if (!sender) this.props.navigation.goBack()
+    if (sender.type === 'photos') await this.doUploadPhotos(sender.data)
+    if (sender.type === 'video') await this.doUploadVideo(sender.data)
     this.props.navigation.navigate('Feeds')
     this.setState({ isVisibleModal: false })
   }

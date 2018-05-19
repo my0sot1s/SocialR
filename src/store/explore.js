@@ -9,6 +9,8 @@ import { FETCH_MULTIPLE_USER } from '../store/user'
 export const FETCH_EXPLORES = 'FETCH_EXPLORES'
 export const FETCH_EXPLORES_SUCCESSFUL = 'FETCH_EXPLORES_SUCCESSFUL'
 export const FETCH_EXPLORES_FALURE = 'FETCH_EXPLORES_FALURE'
+export const REMOVE_EXPLORER = 'REMOVE_EXPLORER'
+export const REMOVE_EXPLORER_SUCCESS = 'REMOVE_EXPLORER_SUCCESS'
 
 const objectPath = require('object-path')
 const initState = {
@@ -23,7 +25,15 @@ const initState = {
 export function* watchFetchExplores() {
   yield takeEvery(FETCH_EXPLORES, fetchExplores)
 }
+export function* watchRemoveExplorers() {
+  yield takeEvery(REMOVE_EXPLORER, removeEx)
+}
 
+export function* removeEx() {
+  yield put({
+    type: REMOVE_EXPLORER_SUCCESS
+  })
+}
 export function* fetchExplores() {
   try {
     let lock = yield select(getCurrentExploresLock)
@@ -71,6 +81,8 @@ export const exploreReducers = (state = initState, { type, data, error }) => {
       return {
         ...state, error: data
       }
+    case REMOVE_EXPLORER_SUCCESS:
+      return initState
     default:
       return state
   }

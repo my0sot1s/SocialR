@@ -1,6 +1,13 @@
-import { call, takeLatest, put } from 'redux-saga/effects'
+import { call, takeLatest, put, all } from 'redux-saga/effects'
 import { login, register } from '../api/auth'
 import { SetStorage } from '../config/configureStore'
+import { REMOVE_EMOTIONS } from './emotion'
+import { REMOVE_EXPLORER } from './explore'
+import { REMOVE_ALL_FEED } from './post'
+import { REMOVE_SAVED } from './saved'
+import { REMOVE_USERS } from './user'
+import { REMOVE_ALL } from './me'
+
 export const LOGIN_REQ = 'LOGIN_REQ'
 export const LOGIN_SUCCESSFUL = 'LOGIN_SUCCESSFUL'
 export const LOGIN_FALURE = 'LOGIN_FALURE'
@@ -31,29 +38,37 @@ export function* watchLogout() {
 }
 
 export function* startLogout() {
-  yield SetStorage('LOGIN', {})
-  put({ type: LOGOUT_DONE })
+  yield all([
+    put({ type: REMOVE_EMOTIONS }),
+    put({ type: REMOVE_ALL_FEED }),
+    put({ type: REMOVE_SAVED }),
+    put({ type: REMOVE_USERS }),
+    put({ type: REMOVE_ALL }),
+    put({ type: REMOVE_EXPLORER }),
+    put({ type: LOGOUT_DONE }),
+    SetStorage('LOGIN', {})
+  ])
 }
 
 export function* startLogin({ username, password }) {
-  try {
-    const json = yield call(login, username, password)
+  const json = yield call(login, username, password)
+  if (!json.error) {
+    yield put({ type: LOGIN_SUCCESSFUL, data: json })
     yield SetStorage('LOGIN', {
       username,
       password
     })
-    yield put({ type: LOGIN_SUCCESSFUL, data: json })
-  } catch (error) {
-    yield put({ type: LOGIN_FALURE, error })
+    return
   }
+  yield put({ type: LOGIN_FALURE, data: json })
 }
-export function* startRegister({ username, password, email, avatar }) {
-  try {
-    const json = yield call(register, username, password, email, avatar)
+export function* startRegister({ username, password, email, avatar, fullname }) {
+  const json = yield call(register, username, password, email, fullname, avatar)
+  if (!json.error) {
     yield put({ type: REGISTER_SUCCESSFUL, data: json })
-  } catch (error) {
-    yield put({ type: REGISTER_FALURE, error })
+    return
   }
+  yield put({ type: REGISTER_FALURE, data: json })
 }
 
 // reducers
@@ -64,7 +79,8 @@ export const authReducers = (state = initState, { type, data, error }) => {
       return {
         ...state,
         owner: data.user,
-        token: data.token
+        token: data.token,
+        error: null
       }
     case LOGIN_FALURE:
       return {
@@ -74,7 +90,8 @@ export const authReducers = (state = initState, { type, data, error }) => {
       return {
         ...state,
         owner: data.user,
-        token: data.token
+        token: data.token,
+        error: null
       }
     case REGISTER_FALURE:
       return {
@@ -99,12 +116,13 @@ export const loginAccount = (username, password) => {
     password
   }
 }
-export const registerAccount = (username, password, email, avatar) => {
+export const registerAccount = (username, password, email, fullname, avatar) => {
   return {
     type: REGISTER_REQ,
     username,
     password,
     email,
+    fullname,
     avatar
   }
 }

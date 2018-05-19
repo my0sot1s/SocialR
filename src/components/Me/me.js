@@ -11,31 +11,57 @@ import {
   fetchRefreshMePostsAll,
   getMeAllPosts,
   getMeCurrentLock,
+  removeAll
 } from '../../store/me'
 import Loading from '../../lib/commons/Loading'
-import { fetchCountFollow } from '../../api/follow'
+import { fetchCountFollow, isFollow, followPeople, unfollowFriend } from '../../api/follow'
 import { getUsers } from '../../store/user'
-import { getOwnerID } from '../../store/auth'
+import { getOwnerID, getOwner } from '../../store/auth'
 import { connect } from 'react-redux'
 import BottomLoader from '../../lib/commons/BottomLoader'
 import HeaderCustom from '../../lib/commons/Header'
 import Button from '../../lib/commons/Button'
 import Album from '../Album'
+import Player from '../../lib/Video/Player'
+import Video from '../../lib/Video/Video'
 const { height } = Dimensions.get('screen')
+const objectPath = require('object-path')
 
 class Me extends PureComponent {
+  constructor(props) {
+    super(props)
+    this.followAction = this.followAction.bind(this)
+  }
   state = {
     isRefreshing: false,
     isFetching: false,
-    count: 0
+    count: 0,
+    user: {},
+    isFollow: {}
+    // uid: ''
   }
   static navigationOptions = {
     header: null
   }
   async componentDidMount() {
-    let { uid, fetchMePostsAll } = this.props
-    let resp = await Promise.all([fetchMePostsAll(), fetchCountFollow(uid, uid)])
-    this.setState({ count: resp[1] })
+    let { removeAll, uid, fetchMePostsAll, navigation, owner, users } = this.props
+    await removeAll()
+    let Uuid = objectPath.get(navigation, 'state.params.uid')
+    let listReq = []
+    if (Uuid) {
+      this.setState({ uid: Uuid, user: users.find(u => u.id === Uuid) })
+      listReq.push(isFollow(uid, Uuid))
+    } else {
+      this.setState({ uid, user: owner })
+
+    }
+    let resp = await Promise.all([
+      fetchMePostsAll(this.state.uid),
+      fetchCountFollow(this.state.uid, this.state.uid),
+      ...listReq
+    ])
+    let stateSet = resp.length === 2 ? { count: resp[1] } : { count: resp[1], isFollow: resp[2] }
+    this.setState(stateSet)
   }
 
   async onRefreshList() {
@@ -45,23 +71,62 @@ class Me extends PureComponent {
     this.setState({ isRefreshing: false })
   }
   async fetchMore() {
-    if (!this.props.locked)
-      await this.props.fetchMePostsAll()
+    let { locked, fetchMePostsAll, uid } = this.props
+    if (!locked)
+      await fetchMePostsAll(uid)
+  }
+  componentWillUnmount() {
+    this.props.removeAll()
+  }
+  async followAction(actions, userTarget) {
+    let { uid } = this.props
+    alert(`${userTarget},${uid}`)
+    if (actions === 'follow') {
+      let resuit = await followPeople(uid, userTarget)
+      // increate follow count
+      // change relation to unfollow
+      if (resuit.ok)
+        this.setState({
+          count: Number(this.state.count) + 1,
+          isFollow: !this.state.isFollow
+        })
+      else alert(`Can not ${actions} now`)
+    }
+    else if (actions === 'unfollow') {
+      let resuit = await unfollowFriend(uid, userTarget)
+      // reduce follow count
+      // change relation to unfollow
+      if (resuit.ok)
+        this.setState({
+          count: this.state.count - 1,
+          isFollow: !this.state.isFollow
+        })
+      else alert(`Can not ${actions} now`)
+    }
   }
   render() {
     let { mePosts, users, uid, locked } = this.props
     return (
       <View style={{ height, backgroundColor: '#fff', flex: 1 }}>
-        <HeaderCustom style={{ height: 25, borderColor: "#fff", marginTop: 15 }}
-          rightComponent={
+        {uid === this.state.uid ? < HeaderCustom style={{ height: 25, borderColor: "#fff", marginTop: 15 }}
+          leftComponent={
             <Button onPress={() => { this.props.navigation.navigate('Notifications') }}>
               <Icon name={'ios-notifications-outline'} size={27} />
             </Button>
-          } />
-        <Owner {...this.props} count={this.state.count} />
+          }
+          rightComponent={
+            <Button onPress={() => { this.props.navigation.navigate('Notifications') }}>
+              <Icon name={'ios-settings-outline'} size={27} />
+            </Button>
+          } /> : <View></View>}
+        <Owner {...this.props}
+          count={this.state.count}
+          owner={this.state.user}
+          isFollow={this.state.isFollow}
+          doFollow={this.followAction} />
         <ScrollableTabView style={{ marginTop: 5, borderWidth: 1, borderColor: '#eee' }}>
           <View tabLabel='Timeline' style={[styles.tabView, { borderColor: '#eee', borderRightWidth: 1 }]}>
-            {mePosts.length !== 0 ? <FlatList
+            <FlatList
               data={mePosts}
               scrollEventThrottle={16}
               keyExtractor={(item, index) => index.toString()}
@@ -79,14 +144,16 @@ class Me extends PureComponent {
                 }
                 return <View />
               }}
-            /> : <Loading />}
+            />
           </View>
           <View tabLabel='Album' style={styles.tabView}>
-            <Album {...this.props} />
+            <Album {...this.props} uid={this.state.uid} />
           </View>
-          <View tabLabel='Saved' style={styles.tabView}>
-            <ListActivities type={'block'} />
-          </View>
+          {uid === this.state.uid ? <View tabLabel='Saved' style={styles.tabView}>
+            {/* <Player /> */}
+            <ListActivities type="round" />
+            {/* <Video /> */}
+          </View> : null}
         </ScrollableTabView >
       </View >
     )
@@ -97,10 +164,12 @@ let mapStateToProps = (state) => {
     mePosts: getMeAllPosts(state),
     users: getUsers(state),
     locked: getMeCurrentLock(state),
-    uid: getOwnerID(state)
+    uid: getOwnerID(state),
+    owner: getOwner(state)
   }
 }
 export default connect(mapStateToProps, {
   fetchMePostsAll,
-  fetchRefreshMePostsAll
+  fetchRefreshMePostsAll,
+  removeAll
 })(Me)

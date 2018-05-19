@@ -6,14 +6,14 @@ let wp = (percentage) => {
   return Math.round(value)
 }
 
-export const slideHeight = viewportHeight * 0.58
+export const slideHeight = viewportHeight * 0.64
 const slideWidth = wp(95)
 const itemHorizontalMargin = wp(1)
 
 export const sliderWidth = viewportWidth
 export const itemWidth = slideWidth + itemHorizontalMargin * 2
 export const colors = {
-  black: '#1a1917',
+  // black: '#1a1917',
   black: '#fff',
   gray: '#888888',
   background1: '#B721FF',
@@ -22,7 +22,7 @@ export const colors = {
 const entryBorderRadius = 2
 export const styles = StyleSheet.create({
   otherSide: {
-    height: 0.22 * viewportHeight,
+    height: 0.2 * viewportHeight,
     backgroundColor: colors.black
   },
   container: {

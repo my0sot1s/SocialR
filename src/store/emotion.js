@@ -3,7 +3,8 @@ import {
   takeLatest,
   put,
   all,
-  select
+  select,
+  takeEvery
 } from 'redux-saga/effects'
 // import { fetchUserById, fetchUserByIDs } from '../api/user'
 import { FETCH_MULTIPLE_USER } from './user'
@@ -14,6 +15,8 @@ export const FETCH_EMOTION_FALURE = 'FETCH_EMOTION_FALURE'
 export const ADD_EMOTION = 'ADD_EMOTION'
 export const ADD_EMOTION_SUCCESS = 'ADD_EMOTION_SUCCESS'
 export const ADD_EMOTION_FALURE = 'ADD_EMOTION_FALURE'
+export const REMOVE_EMOTIONS = 'REMOVE_EMOTIONS'
+export const REMOVE_EMOTIONS_DONE = 'REMOVE_EMOTIONS_DONE'
 
 const objectPath = require('object-path')
 const uniq = require('lodash/uniq')
@@ -30,6 +33,15 @@ export function* watchAddEmotion() {
   yield takeLatest(ADD_EMOTION, startAddEmotions)
 }
 
+export function* watchRemoveEmo() {
+  yield takeEvery(REMOVE_EMOTIONS, removeEmo)
+}
+
+export function* removeEmo() {
+  yield put({
+    type: REMOVE_EMOTIONS_DONE
+  })
+}
 export function* startFetchEmotions({ uid }) {
   try {
     // let checkuser = yield select(findUser(uid))
@@ -78,6 +90,8 @@ export const usersEmotionReducers = (state = initState, { type, data, error }) =
       return {
         ...state, error: data
       }
+    case REMOVE_EMOTIONS_DONE:
+      return initState
     default:
       return state
   }

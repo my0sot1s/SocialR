@@ -39,6 +39,21 @@ export default class ImageSlider extends PureComponent {
 		super(props)
 		this.ImageListRender = this.ImageListRender.bind(this)
 	}
+	state = {
+		maxHeight: 1
+	}
+	componentDidMount() {
+		let maxHeight = 1
+		if (this.props.hardHeight) this.setState({ maxHeight: this.props.hardHeight })
+		this.props.images.forEach(i => {
+			let per = i.height / i.width
+			if (maxHeight < per && per < 1.5) {
+				maxHeight = per
+			}
+		})
+		this.setState({ maxHeight: maxHeight * deviceWidth })
+	}
+
 	numItems = this.props.images.length
 	itemWidth = 6 || (FIXED_BAR_WIDTH / this.numItems) - ((this.numItems - 1) * BAR_SPACE)
 	animVal = new Animated.Value(0)
@@ -49,11 +64,12 @@ export default class ImageSlider extends PureComponent {
 	ImageListRender(item) {
 		return (
 			<Button activeOpacity={1}
-				style={{ flex: 1, width: deviceWidth, height: MAX_HEIGHT }}
+				style={{ flex: 1, width: deviceWidth, height: this.state.maxHeight }}
 				onPress={this.props.onDoubleClick}>
 				<Image
 					source={{ uri: this.calculateImageSize(item.url) }}
-					style={{ width: deviceWidth, height: MAX_HEIGHT }}
+					style={{ width: deviceWidth, height: this.state.maxHeight }}
+					resizeMode='contain'
 					placeholderColor="#eee"
 				/>
 			</Button>

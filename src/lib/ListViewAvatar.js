@@ -4,10 +4,11 @@ import {
   StyleSheet, Image, Dimensions
 } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
-import { H2, H3 } from '../lib/commons/H'
+import { H2, H3, H4 } from '../lib/commons/H'
 import { timeSince, resizeImageByWidth } from '../utils/func'
 import AsyncImage from './commons/AsyncImage'
 import CircleImage from './commons/CircleImage'
+import Button from './commons/Button'
 const objectPath = require('object-path')
 const { width } = Dimensions.get('screen')
 const styles = StyleSheet.create({
@@ -22,15 +23,15 @@ const styles = StyleSheet.create({
   common: {
     // flex: 1,
     paddingLeft: 5,
-    flexBasis: '15%'
+    flexBasis: '17%'
   },
   tiny: {
     // flex: 1,
-    flexBasis: '7%'
+    flexBasis: '8%'
   },
   bigger: {
     // flex: 5,
-    flexBasis: '78%',
+    flexBasis: '75%',
     paddingRight: 10,
     marginRight: 5
   },
@@ -72,7 +73,20 @@ class ListViewAvatar extends PureComponent {
   state = {
     items: [
       {
-        link: 'https://i.imgur.com/UFUGlGnt.jpg', time: '5h ago', notice: 'style of the default tab bars underline'
+        link: 'https://i.imgur.com/UFUGlGnt.jpg', time: '5h ago', notice: 'style of the default tab bars underline',
+        galeries: [{
+          link: 'https://i.imgur.com/PBCuYl6t.jpg',
+        }, {
+          link: 'https://i.imgur.com/PBCuYl6t.jpg',
+        }, {
+          link: 'https://i.imgur.com/PBCuYl6t.jpg',
+        }, {
+          link: 'https://i.imgur.com/PBCuYl6t.jpg',
+        }, {
+          link: 'https://i.imgur.com/PBCuYl6t.jpg',
+        }, {
+          link: 'https://i.imgur.com/PBCuYl6t.jpg',
+        }]
       },
       { link: 'https://i.imgur.com/PBCuYl6t.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
       { link: 'https://i.imgur.com/Qsv8Hjft.jpg', time: '5h ago', notice: 'style of the default tab bars underline' },
@@ -134,7 +148,7 @@ class ListViewAvatar extends PureComponent {
           {GaleryRender(data.galeries)}
         </View>
         <View style={[styles.container, styles.tiny]}>
-          <Icon name={'ios-information-outline'} size={22} />
+          <Icon name={'ios-reorder-outline'} size={22} />
         </View>
       </View>
     }
@@ -154,7 +168,7 @@ class ListViewAvatar extends PureComponent {
 
 // TimeAgo.locale(en)
 // const timeAgo = new TimeAgo('en-US')
-export class SimpleTableView extends React.Component {
+export class SimpleTableView extends React.PureComponent {
   constructor(props) {
     super(props)
   }
@@ -163,13 +177,17 @@ export class SimpleTableView extends React.Component {
   }
   renderUsers(uid) {
     let { usersComments } = this.state
-    return usersComments.find(u => u.id === uid)
+    let u = usersComments.find(u => u.id === uid)
+    if (!u && this.props.owner.id === uid) return this.props.owner
+    return u
   }
   componentWillReceiveProps(nextProps) {
     this.setState({ usersComments: nextProps.users })
   }
   renderListItem(data) {
-    let avatar = objectPath.get(this.renderUsers(data.user_id), 'avatar')
+    let selected = this.renderUsers(data.user_id)
+    let avatar = objectPath.get(selected, 'avatar')
+    let name = objectPath.get(selected, 'fullname', '...')
     return (
       <View style={[styles.container, styles.lineheight]}>
         <View style={[styles.container, styles.common, { alignItems: 'flex-start' }]}>
@@ -181,13 +199,14 @@ export class SimpleTableView extends React.Component {
           }
         </View>
         <View style={[styles.container, styles.bigger, { flexDirection: 'column', alignItems: 'flex-start' }]}>
-          <Text style={styles.textStyle}>{data.text}</Text>
-          <Text style={styles.textTime}>{`${timeSince(new Date(data.created))}`}</Text>
+          <Text style={styles.textStyle} ><Text
+            style={[styles.textStyle, { fontWeight: 'bold' }]}>{name + ':'}</Text>{data.text}</Text>
+          <Text style={styles.textTime}>{timeSince(new Date(data.created))}</Text>
         </View>
         <View style={[styles.container, styles.tiny]}>
           <Icon name="ios-information-outline" size={22} />
         </View>
-      </View>
+      </View >
     )
   }
   render() {
@@ -195,6 +214,46 @@ export class SimpleTableView extends React.Component {
       <View style={{ flex: 1 }}>
         <FlatList
           data={this.props.comments}
+          extraData={this.state}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => this.renderListItem(item)} />
+      </View>
+    );
+  }
+}
+
+export class SearchList extends React.PureComponent {
+  constructor(props) {
+    super(props)
+    this.changeToProfile = this.changeToProfile.bind(this)
+    debugger
+  }
+  changeToProfile(data) {
+    this.props.navigation.navigate('Profile', { uid: data.id })
+  }
+  renderListItem(data) {
+    return (
+      <Button style={[styles.container, styles.lineheight]}
+        onPress={() => this.changeToProfile(data)}>
+        <View style={[styles.container, styles.common, { alignItems: 'flex-start' }]}>
+          <AsyncImage
+            source={{ uri: data.avatar }}
+            resizeMode='contain'
+            style={{ height: 34, width: 34, borderRadius: 17 }} />
+        </View>
+        <View style={[styles.container, styles.bigger, { flexDirection: 'column', alignItems: 'flex-start' }]}>
+          <Text style={styles.textStyle} >{data.fullname}</Text>
+          <Text style={styles.textTime}>{data.username}</Text>
+        </View>
+      </Button>
+    )
+  }
+  render() {
+    return (
+      <View style={{ flex: 1 }}>
+        <FlatList
+          data={this.props.userSearch}
           extraData={this.state}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}

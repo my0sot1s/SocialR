@@ -63,12 +63,13 @@ class CardHeader extends PureComponent {
     let { isliked } = this.props
     return (
       <View style={[flexCenter, styles.container]}>
-        <ButtonZ style={[flexCenter, styles.imageWrap]}>
+        <ButtonZ style={[flexCenter, styles.imageWrap]}
+          onPress={() => this.props.navigation.navigate('Profile', { uid: this.props.data.id })}>
           {this.renderAvatar()}
         </ButtonZ>
         <View style={[flexCenter, styles.headerText]}>
           <ButtonZ style={[flexCenter, styles.titleName]}>
-            <H2 text={objectPath.get(this.props.data, 'username', '...')} style={{ fontWeight: 'bold' }} />
+            <H2 text={objectPath.get(this.props.data, 'fullname', '...')} style={{ fontWeight: 'bold' }} />
           </ButtonZ>
         </View>
         <Ionicons
