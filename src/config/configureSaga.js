@@ -5,7 +5,7 @@ import { watchLogin, watchLogout } from '../store/auth'
 import { watchFetchUser, watchFetchMultipleUsers, watchRemoveUsers, watchSearchUsers } from '../store/user'
 import { watchFetchEmotion, watchAddEmotion, watchRemoveEmo } from '../store/emotion'
 import { watchFetchExplores, watchRemoveExplorers } from '../store/explore'
-import { watchLikeInfo, watchLike } from '../store/like'
+import { watchLikeInfo, watchLike, watchRemoveLike } from '../store/like'
 import { watchFetchMePosts, watchFetchRefreshMePosts, watchRemoveALl } from '../store/me'
 export default function* root() {
   yield all([
@@ -28,6 +28,7 @@ export default function* root() {
     fork(watchRemoveExplorers),
     fork(watchLikeInfo),
     fork(watchLike),
+    fork(watchRemoveLike),
     fork(watchFetchMePosts),
     fork(watchRemoveALl),
     fork(watchFetchRefreshMePosts)

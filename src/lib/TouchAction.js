@@ -78,9 +78,9 @@ class TouchAction extends PureComponent {
     await fetchMultipleUsers(comments)
   }
   shareOptions = {
-    title: "React Native",
-    message: "Hola mundo",
-    url: "http://facebook.github.io/react-native/",
+    title: "Share post",
+    message: "See app post content | \n",
+    url: this.props.media[0].url,
     subject: "Share Link" //  for email
   };
   Shared() {

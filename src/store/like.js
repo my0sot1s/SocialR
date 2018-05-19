@@ -20,6 +20,8 @@ export const HIT_LIKE_FAILURE = 'HIT_LIKE_FAILURE'
 export const UN_LIKE = 'UN_LIKE'
 export const UN_LIKE_SUCCESS = 'UN_LIKE_SUCCESS'
 export const UN_LIKE_FAILURE = 'UN_LIKE_FAILURE'
+export const REMOVE_STORE_LIKE = 'REMOVE_STORE_LIKE'
+export const REMOVE_STORE_LIKE_SUCCESS = 'REMOVE_STORE_LIKE_SUCCESS'
 const objectPath = require('object-path')
 
 const initState = {
@@ -30,6 +32,9 @@ const initState = {
 
 export function* watchCountLike() {
   yield takeLatest(FETCH_COUNT_LIKE, startFetchCountLike)
+}
+export function* watchRemoveLike() {
+  yield takeLatest(REMOVE_STORE_LIKE, startRemoveLike)
 }
 export function* watchIsLike() {
   yield takeLatest(FETCH_IS_LIKE, startCheckLikeCount)
@@ -42,6 +47,12 @@ export function* watchLike() {
 }
 export function* watchUnlike() {
   yield takeLatest(UN_LIKE, startUnlike)
+}
+
+export function* startRemoveLike() {
+  yield put({
+    type: REMOVE_STORE_LIKE_SUCCESS
+  })
 }
 export function* startGetInfo({ uid, pid }) {
   const [count, ownerLike] = yield call(like.getInfoLike, uid, pid)
@@ -122,6 +133,11 @@ export const usersLikeReducers = (state = initState, { type, data, error }) => {
       return {
         ...state,
         likeList: [...state.likeList, data]
+      }
+    case REMOVE_STORE_LIKE_SUCCESS:
+      return {
+        ...state,
+        ...initState
       }
     default:
       return state

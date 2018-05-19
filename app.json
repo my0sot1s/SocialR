@@ -1,4 +1,7 @@
 {
-  "name": "SocialApp",
-  "displayName": "SocialApp"
+  "expo": {
+    "name": "Majin",
+    "slug": "majin-social",
+    "sdkVersion": "18.0.0"
+  }
 }

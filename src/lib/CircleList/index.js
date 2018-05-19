@@ -55,7 +55,7 @@ class ListItem extends PureComponent {
       return (
         <Button onPress={() => this.props.onClick(props)}
           style={{ padding: 0, margin: 0 }}>
-          <CircleImage source={{ uri: resizeImageByWidth(firstMedia.url, width / 2) }}
+          <CircleImage source={{ uri: resizeImageByWidth(firstMedia.url, width) }}
             resizeMode='cover'
             size={height - 10} />
         </Button>

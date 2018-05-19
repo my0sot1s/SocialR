@@ -7,6 +7,7 @@ import { REMOVE_ALL_FEED } from './post'
 import { REMOVE_SAVED } from './saved'
 import { REMOVE_USERS } from './user'
 import { REMOVE_ALL } from './me'
+import { REMOVE_STORE_LIKE } from './like'
 
 export const LOGIN_REQ = 'LOGIN_REQ'
 export const LOGIN_SUCCESSFUL = 'LOGIN_SUCCESSFUL'
@@ -45,6 +46,7 @@ export function* startLogout() {
     put({ type: REMOVE_USERS }),
     put({ type: REMOVE_ALL }),
     put({ type: REMOVE_EXPLORER }),
+    put({ type: REMOVE_STORE_LIKE }),
     put({ type: LOGOUT_DONE }),
     SetStorage('LOGIN', {})
   ])

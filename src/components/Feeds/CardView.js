@@ -110,12 +110,13 @@ class CardView extends React.PureComponent {
               source={{ uri: data.media[0].url }} />}
           {this.state.showHeart ? <LikeComponent /> : null}
           {/* {this.mainExample(data.media)} */}
-          < TouchAction text={data.text}
+          <TouchAction text={data.text}
             tags={data.tags}
             pid={data.id}
             countLiked={countLiked}
             commentCount={this.state.commentCount}
             isliked={objectPath.get(ownerLiked, 'status')}
+            media={data.media}
             {...this.props} />
           <H4 text={timeAgo}
             style={{ color: '#545454', marginLeft: 15, marginVertical: 5 }} />

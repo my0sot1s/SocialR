@@ -2,11 +2,17 @@ import React, { Component } from 'react'
 import { View, StyleSheet, AlertIOS, Dimensions } from 'react-native'
 import Video from 'react-native-video'
 import Button from '../commons/Button'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 const { width, height } = Dimensions.get('window')
 var styles = StyleSheet.create({
   backgroundVideo: {
     width,
     height: 250
+  },
+  status: {
+    position: 'absolute',
+    bottom: 15,
+    left: 15
   }
 })
 class VideoPlay extends Component {
@@ -61,7 +67,7 @@ class VideoPlay extends Component {
     // let source = this.props.video ? { url: this.props.video.url }
     //   : require('../../assets/ngan_nguyen.mp4')
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, position: 'relative' }}>
         <Button onPress={this.pauseVideo.bind(this)} activeOpacity={1}>
           <Video source={this.props.source}
             // poster="https://baconmockup.com/300/200/"
@@ -84,6 +90,12 @@ class VideoPlay extends Component {
             onBuffer={this.onBuffer}
             style={[styles.backgroundVideo, this.props.style || {}]} />
         </Button>
+        {
+          this.state.paused ? < Ionicons name="ios-pause"
+            color="rgba(254,254,254,0.4)" size={25} style={styles.status} /> :
+            <Ionicons name="ios-play"
+              color="rgba(254,254,254,0.4)" size={25} style={styles.status} />
+        }
       </View>
     )
   }

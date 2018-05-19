@@ -13,14 +13,15 @@ import {
 } from 'react-native';
 import { H1, H2, H3, H4 } from '../../lib/commons/H'
 import Button from '../../lib/commons/Button'
-import { flexCenter } from '../../lib/commons/themes'
+import { flexCenter, relatived } from '../../lib/commons/themes'
 import Icon from 'react-native-vector-icons/Ionicons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { LogoTitle } from '../Comments/Comment'
+import Modal from 'react-native-modal'
 import ScrollTabIcons from '../../lib/TabBar/ScrollTab'
 import HeaderCustom from '../../lib/commons/Header'
 import ImageSlider from '../../lib/commons/ImageSlider'
 import Video from '../../lib/Video/Video'
+import Upload from './UploadPost'
 // import RenderCamera from './Camera'
 const { height, width } = Dimensions.get('window')
 const ImagePicker = require('react-native-image-picker')
@@ -34,6 +35,8 @@ class PhotosPicker extends PureComponent {
       images: [],
       videos: [],
       selected: [],
+      captured: [],
+      isVisible: false,
       selectedVideo: {},
       slider1ActiveSlide: 1,
       fetchParamsImage: { first: 111, assetType: CameraRoll.AssetTypeOptions.Photos },
@@ -42,6 +45,7 @@ class PhotosPicker extends PureComponent {
       tabSelected: 1
     }
     this.slideImagesShow = this.slideImagesShow.bind(this)
+    this.renderModal = this.renderModal.bind(this)
   }
 
   static navigationOptions() {
@@ -122,8 +126,43 @@ class PhotosPicker extends PureComponent {
         source={{ uri: data }} />
     </View>)
   }
+  renderModal() {
+    let { tabSelected, selected, captured, selectedVideo } = this.state
+    let render = {}
+    switch (tabSelected) {
+      case 0: render = {
+        data: [{ uri: captured[0], filename: `capture.${new Date().getTime()}` }],
+        type: 'photos'
+      }
+        console.log('111111', [{ uri: captured[0], filename: `capture.${new Date().getTime()}` }])
+        break
+      case 1: render = {
+        data: this.GetListImagesSelected(selected),
+        type: 'photos'
+      }
+        console.log(this.GetListImagesSelected(selected))
+        break
+      case 2: render = {
+        data: { uri: selectedVideo }, type: 'video'
+      }
+        break
+      default: break
+    }
+    return (
+      <Modal isVisible={this.state.isVisible}>
+        <Upload sender={render}
+          closeUpload={() => this.setState({ isVisible: false })}
+          navigation={this.props.navigation} />
+      </Modal>
+    )
+  }
+  captureDone(uri) {
+    this.setState({
+      captured: [uri]
+    })
+  }
   render() {
-    let { tabSelected, images, videos, selectedVideo, selected } = this.state
+    let { tabSelected, captured, images, videos, selectedVideo, selected } = this.state
     let Picker = (props) => {
       // let { tabSelected, images, videos, selectedVideo, selected } = this.state
       return <View style={styles.container} >
@@ -137,6 +176,9 @@ class PhotosPicker extends PureComponent {
     let imageRender = selected.map(v => {
       return { url: v }
     })
+    let imageCapturedRender = captured.map(v => {
+      return { url: v }
+    })
     return (
       <View style={{ flex: 1 }}>
         <HeaderCustom style={{ height: 30 }}
@@ -148,28 +190,23 @@ class PhotosPicker extends PureComponent {
               }} />
             </Button >}
           rightComponent={
-            <Button onPress={() => this.props.navigation.navigate('Upload', {
-              sender: tabSelected === 1 ? {
-                data: this.GetListImagesSelected(selected),
-                type: 'photos'
-              } :
-                tabSelected === 2 ? {
-                  data:
-                    { uri: selectedVideo }, type: 'video'
-                } : null
-            })}>
+            <Button onPress={() => this.setState({ isVisible: true })}>
               <Icon name={'ios-arrow-forward'} size={27} />
             </Button>
           } />
         < View style={[styles.bigImage]} >
+          {tabSelected === 0 ? this.slideImagesShow(imageCapturedRender) : null}
           {tabSelected === 1 ? this.slideImagesShow(imageRender) : null}
           {tabSelected === 2 ? this.renderVideoPlayer(selectedVideo) : null}
-        </View >
+        </View>
+        {this.renderModal()}
         <ScrollTabIcons
+          ref={(tabView) => { this.tabView = tabView }}
           tabBarPosition="bottom" initialPage={1}
           onChangeTab={this.onChangeTab.bind(this)}
           style={{ paddingTop: 3, height: 45 }}>
-          <RenderCamera tabLabel="Camera" />
+          <RenderCamera tabLabel="Camera"
+            didCapture={this.captureDone.bind(this)} />
           <Picker tabLabel="Image" />
           <Picker tabLabel="Video" />
         </ScrollTabIcons>
@@ -208,14 +245,43 @@ export const styles = StyleSheet.create({
 class RenderCamera extends PureComponent {
   constructor(props) {
     super(props)
+    this.state = {
+      uri: ''
+    }
+    this.renderCamera = this.renderCamera.bind(this)
   }
-  renderCamera() {
-    // ImagePicker.launchCamera({})
+  componentDidMount() {
+    this.renderCamera()
+  }
+
+  async renderCamera() {
+    let options = {
+      storageOptions: {
+        skipBackup: true,
+        path: 'images'
+      }
+    }
+    await ImagePicker.launchCamera(options, (response) => {
+      if (response.didCancel) {
+        console.warn('cancel')
+        this.props.didCancel()
+      }
+      else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      }
+      console.log('response1111', response)
+      this.props.didCapture(response.uri)
+    })
   }
   render() {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, position: 'relative' }}>
+        <Button onPress={this.renderCamera.bind(this)}
+          style={{ bottom: 20, left: '32%', position: 'absolute' }}>
 
+          <H2 text="Relaunch Camera" />
+
+        </Button>
       </View>
     )
   }

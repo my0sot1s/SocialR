@@ -67,24 +67,32 @@ class ModalInside extends PureComponent {
   async CreatePost() {
     Keyboard.dismiss()
     await this.setState({ isVisibleModal: true })
-    let { sender } = this.props.navigation.state.params
-    if (!sender) this.props.navigation.goBack()
+    // let { sender } = this.props.navigation.state.params
+    let { sender } = this.props
+    // if (!sender) this.props.navigation.goBack()
     if (sender.type === 'photos') await this.doUploadPhotos(sender.data)
     if (sender.type === 'video') await this.doUploadVideo(sender.data)
+    this.props.closeUpload()
     this.props.navigation.navigate('Feeds')
     this.setState({ isVisibleModal: false })
   }
   render() {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{
+        flex: 1, backgroundColor: '#fff', width, height: 0.8 * height,
+        top: 0.2 * height,
+        left: -20,
+        position: 'absolute',
+        // left: -10,
+      }}>
         {/* <StatusBar hidden /> */}
         <HeaderCustom style={{ height: 30 }}
           leftComponent={
-            <Button onPress={() => this.props.navigation.goBack()}>
-              <Icon name="ios-arrow-back" size={27} />
+            <Button onPress={() => this.props.closeUpload()}>
+              <Icon name="ios-close" size={35} />
             </Button>}
           centerComponent={
-            <LogoTitle text={"Create New".toUpperCase()}
+            <LogoTitle text={"Create New Post".toUpperCase()}
               style={{ color: "#aaa" }} />
           } />
         <View style={[{
@@ -113,22 +121,9 @@ class ModalInside extends PureComponent {
           flexDirection: 'row'
         }]}>
           <Button style={[flexCenter, {
-            flexBasis: '50%',
-            height: 0.08 * height,
+            flexBasis: '80%',
             padding: 5,
-            borderRadius: 5,
-            borderRightWidth: 1,
-            borderRightColor: '#eee',
-            backgroundColor: '#aaa'
-          }]}  >
-            <Text style={{
-              fontSize: 15,
-              color: '#5b5b5b'
-            }}>Cancel</Text>
-          </Button>
-          <Button style={[flexCenter, {
-            flexBasis: '50%',
-            padding: 5,
+            marginHorizontal: 10,
             borderRadius: 5,
             height: 0.08 * height,
             backgroundColor: '#42b9f4'

@@ -30,7 +30,8 @@ export const checkImage = fileName => {
   return (/\.(gif|jpg|jpeg|tiff|png)$/i).test(fileName)
 }
 
-export const resizeImageByWidth = (link, width) => {
+export const resizeImageByWidth = (link = '', width) => {
+  width = Math.floor(width)
   return link.replace('/upload', `/upload/c_scale,w_${width}`)
 }
 
