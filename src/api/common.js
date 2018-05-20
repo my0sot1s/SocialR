@@ -1,6 +1,7 @@
 import RNFetchBlob from 'react-native-fetch-blob'
 
 export let HOST = 'https://lit-eyrie-97480.herokuapp.com/'
+// export let HOST = 'http://local.tenm.cf:4444/'
 // const DEV = 'http://local.tenm.cf:4444/'
 // const DEV = 'http://192.168.22.103:4444/'
 // HOST = DEV

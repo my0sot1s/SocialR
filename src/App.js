@@ -6,7 +6,7 @@ import SplashScreen from 'react-native-splash-screen'
 import Home from './navigation/Router'
 import { GetBlob } from './api/common'
 import Loader from 'react-native-mask-loader'
-
+console.disableYellowBox = true;
 class AppRoot extends React.PureComponent {
   constructor(props) {
     super(props)

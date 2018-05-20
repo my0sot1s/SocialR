@@ -37,29 +37,29 @@ class Owner extends React.PureComponent {
         </View>
         <View style={[flexCenter, { width: 0.65 * width, flexDirection: 'column', height: 0.16 * height }]}>
           <View style={[flexCenter]}>
-            <H1 text={`${objectPath.get(owner, 'fullname', owner.username)}(${owner.username})`} />
+            <H1 text={`${objectPath.get(owner, 'fullname', objectPath.get(owner, 'username', ''))}(${objectPath.get(owner, 'username', '')})`} />
           </View>
           <View style={{ alignSelf: 'flex-start', alignItems: 'flex-end', marginTop: 10 }}>
             <View style={[flexCenter]}>
-              {!ifollow ? < Button style={[flexCenter, {
+              {!ifollow ? <Button style={[flexCenter, {
                 height: 30,
                 flex: 1,
                 // width: 70,
                 borderRadius: 20,
                 backgroundColor: '#ccc',
                 marginRight: 5
-              }]} onPress={this.doFollowNow.bind(this, 'follow', owner.id)}>
+              }]} onPress={this.doFollowNow.bind(this, 'follow', objectPath.get(owner, 'id', ''))}>
                 <H4 text={'follow'.toUpperCase()} style={{ color: '#fff' }} />
-              </Button> : ownerId === owner.id ? <View></View> : <Button style={[flexCenter, {
+              </Button> : ownerId === objectPath.get(owner, 'id', '') ? <View></View> : <Button style={[flexCenter, {
                 height: 30,
                 flex: 1,
                 // width: 70,
                 borderRadius: 20,
                 backgroundColor: '#ccc',
                 marginRight: 5
-              }]} onPress={this.doFollowNow.bind(this, 'unfollow', owner.id)}>
+              }]} onPress={this.doFollowNow.bind(this, 'unfollow', objectPath.get(owner, 'id', ''))}>
                 <H4 text={'unfollow'.toUpperCase()} style={{ color: '#fff' }} /></Button>}
-              {ownerId === owner.id ? <Button style={[flexCenter, {
+              {ownerId === objectPath.get(owner, 'id', '') ? <Button style={[flexCenter, {
                 height: 30,
                 // width: 50,
                 flex: 1,

@@ -72,9 +72,9 @@ class ModalInside extends PureComponent {
     // if (!sender) this.props.navigation.goBack()
     if (sender.type === 'photos') await this.doUploadPhotos(sender.data)
     if (sender.type === 'video') await this.doUploadVideo(sender.data)
+    this.setState({ isVisibleModal: false })
     this.props.closeUpload()
     this.props.navigation.navigate('Feeds')
-    this.setState({ isVisibleModal: false })
   }
   render() {
     return (
