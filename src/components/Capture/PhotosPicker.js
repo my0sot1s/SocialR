@@ -206,6 +206,7 @@ class PhotosPicker extends PureComponent {
           onChangeTab={this.onChangeTab.bind(this)}
           style={{ paddingTop: 3, height: 45 }}>
           <RenderCamera tabLabel="Camera"
+            didCancel={() => { }}
             didCapture={this.captureDone.bind(this)} />
           <Picker tabLabel="Image" />
           <Picker tabLabel="Video" />
