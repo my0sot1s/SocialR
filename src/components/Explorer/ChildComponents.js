@@ -15,6 +15,8 @@ import CircleImage from '../../lib/commons/CircleImage'
 import { flexCenter } from '../../lib/commons/themes'
 import { H3, H4 } from '../../lib/commons/H'
 import DModal from '../DetailModal'
+import { getOwnerID } from '../../store/auth'
+import { connect } from 'react-redux'
 import Video from '../../lib/Video/Video'
 const objectPath = require('object-path')
 
@@ -38,7 +40,7 @@ export class Ex extends React.PureComponent {
   }
 }
 
-export class Ex2Ex extends React.PureComponent {
+export class Ex2ExComponent extends React.PureComponent {
   state = {
     isVisible: false,
     selected: {}
@@ -56,7 +58,12 @@ export class Ex2Ex extends React.PureComponent {
     }, 2500)
   }
   checkProfile(user) {
-    this.props.navigation.navigate('Profile', { uid: user.id })
+    if (user.id !== this.props.ownerId) {
+      this.props.navigation.navigate('Profile', { uid: user.id })
+    } else {
+      this.props.navigation.navigate('Me')
+    }
+
   }
   render() {
     let { data, users } = this.props
@@ -111,10 +118,15 @@ export class Ex2Ex extends React.PureComponent {
           </View>
         </View>
       </View>
-
     )
   }
 }
+let mapStateToProps = state => {
+  return {
+    ownerId: getOwnerID(state)
+  }
+}
+export const Ex2Ex = connect(mapStateToProps)(Ex2ExComponent)
 
 export class ChildSlider extends React.PureComponent {
 

@@ -146,7 +146,7 @@ export const searchUserInfo = (query) => {
 // getter
 
 export const getUsers = state => {
-  return [...state.user.users, getOwner(state), ...getUsersSearched(state)]
+  return [...state.user.users, getOwner(state), ...getUsersSearched(state) || []]
 }
 
 export const getUsersSearched = state => {

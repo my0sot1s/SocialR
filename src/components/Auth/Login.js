@@ -78,7 +78,7 @@ class Login extends Component {
         <KeyboardAwareScrollView style={{ backgroundColor: "#fff" }}
           scrollEnabled={false}>
           <ImageBackground blurRadius={1}
-            source={require('../../assets/bg.jpg')}
+            source={require('../../assets/bg.jpeg')}
             style={{ width, height }}>
 
             <View style={{
@@ -92,22 +92,22 @@ class Login extends Component {
               }} /> : null}
               <H3 text={"UserName:".toUpperCase()} style={{
                 marginVertical: 10,
-                color: '#ccc',
+                color: '#4f4f4f',
                 fontFamily: 'Helvetica'
               }} />
               <EditTextHighlight
                 onChangeText={this.changeUsername.bind(this)}
                 autoCapitalize='none'
-                addition={{ padding: 8, fontSize: 16 }}
+                addition={{ padding: 8, fontSize: 16, backgroundColor: 'rgba(219, 219, 219,0.5)' }}
                 value={this.state.username}
               />
               <H3 text={"Password:".toUpperCase()} style={{
                 marginVertical: 10,
-                color: '#ccc',
+                color: '#4f4f4f',
                 fontFamily: 'Helvetica'
               }} />
               <EditTextHighlight secureTextEntry onChangeText={this.changePassword.bind(this)}
-                addition={{ padding: 8, fontSize: 16 }}
+                addition={{ padding: 8, fontSize: 16, backgroundColor: 'rgba(219, 219, 219,0.5)' }}
                 value={this.state.password}
               />
               <Button onPress={this.loginToApp.bind(this)}

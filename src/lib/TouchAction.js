@@ -111,7 +111,7 @@ class TouchAction extends PureComponent {
       </View>
     }
     let renderNumberComment = (num) => {
-      if (num == 0) return `Press to first like this post`
+      if (!num || num == 0) return `Press to first like this post`
       return `Like by ${num} peoples`
     }
     let tag = ''

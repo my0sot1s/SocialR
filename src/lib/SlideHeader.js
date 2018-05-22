@@ -5,6 +5,8 @@ import ButtonZ from './commons/Button'
 import { H2, H3, H4 } from './commons/H'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import CircleImage from './commons/CircleImage'
+import { getOwnerID } from '../store/auth'
+import { connect } from 'react-redux'
 const objectPath = require('object-path')
 
 const styles = StyleSheet.create({
@@ -59,12 +61,19 @@ class CardHeader extends PureComponent {
         style={styles.imageMode} resizeMode='cover' />
     )
   }
+  pressToWatchProfile() {
+    if (this.props.ownerId !== this.props.data.id) {
+      this.props.navigation.navigate('Profile', { uid: this.props.data.id })
+    } else {
+      this.props.navigation.navigate('Me')
+    }
+  }
   render() {
     let { isliked } = this.props
     return (
       <View style={[flexCenter, styles.container]}>
         <ButtonZ style={[flexCenter, styles.imageWrap]}
-          onPress={() => this.props.navigation.navigate('Profile', { uid: this.props.data.id })}>
+          onPress={this.pressToWatchProfile.bind(this)}>
           {this.renderAvatar()}
         </ButtonZ>
         <View style={[flexCenter, styles.headerText]}>
@@ -81,5 +90,9 @@ class CardHeader extends PureComponent {
     )
   }
 }
-
-export default CardHeader
+let mapStateToProps = state => {
+  return {
+    ownerId: getOwnerID(state)
+  }
+}
+export default connect(mapStateToProps)(CardHeader)

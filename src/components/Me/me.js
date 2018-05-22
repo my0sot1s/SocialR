@@ -80,7 +80,7 @@ class Me extends PureComponent {
   }
   async followAction(actions, userTarget) {
     let { uid } = this.props
-    alert(`${userTarget},${uid}`)
+    // alert(`${userTarget},${uid}`)
     if (actions === 'follow') {
       let resuit = await followPeople(uid, userTarget)
       // increate follow count

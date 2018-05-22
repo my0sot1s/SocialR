@@ -140,6 +140,13 @@ class Album extends React.PureComponent {
       })
     }, 2500)
   }
+  closeNewAlbum() {
+    this.setState({
+      createAlbumNow: false,
+      listImageCreateAlbum: [],
+      albumname: ''
+    })
+  }
   render() {
     // array of array
     let { data, selected, isVisible, createAlbumNow, listImageCreateAlbum } = this.state
@@ -169,17 +176,20 @@ class Album extends React.PureComponent {
         <Modal isVisible={createAlbumNow}>
           <View style={{
             flex: 1, backgroundColor: '#fff',
-            position: 'absolute', top: 0.2 * height,
-            left: 0,
+            position: 'absolute', top: 0.25 * height,
+            left: -18,
             height: 0.7 * height,
-            width: width - 40,
-            padding: 5
+            width: width,
+            padding: 8
           }}>
             <H3 text={"Album Name:".toUpperCase()} style={{
               marginVertical: 10,
               color: '#ccc',
               fontFamily: 'Helvetica'
             }} />
+            <Button onPress={this.closeNewAlbum.bind(this)}>
+              <Icon name="ios-close" size={35} />
+            </Button>
             <EditTextHighlight
               onChangeText={(text) => this.setState({ albumname: text })}
               autoCapitalize='none'
@@ -205,7 +215,7 @@ class Album extends React.PureComponent {
               // flexBasis: '80%',
               padding: 5,
               marginTop: 7,
-              width: 0.8 * width,
+              width: 0.9 * width,
               marginHorizontal: 10,
               borderRadius: 5,
               height: 0.07 * height,
@@ -218,7 +228,7 @@ class Album extends React.PureComponent {
         </Modal>
         <FlatList
           ListHeaderComponent={() =>
-            <View style={{ height: width / 4 }}>
+            this.props.ownerId === this.props.uid ? <View style={{ height: width / 4 }}>
               <Button style={[flexCenter, {
                 width: width / 4, height: width / 4,
                 borderWidth: 1, borderColor: '#eee',
@@ -226,7 +236,7 @@ class Album extends React.PureComponent {
               }]} onPress={() => this.setState({ createAlbumNow: true })}>
                 <Icon name="ios-add" size={30} />
               </Button>
-            </View>}
+            </View> : null}
           data={data}
           scrollEventThrottle={16}
           keyExtractor={(item, index) => index.toString()}
@@ -241,7 +251,7 @@ class Album extends React.PureComponent {
 }
 let mapStateToProps = state => {
   return {
-    // ownerId: getOwnerID(state)
+    ownerId: getOwnerID(state)
   }
 }
 

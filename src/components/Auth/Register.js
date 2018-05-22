@@ -131,7 +131,7 @@ class Register extends Component {
       <KeyboardAwareScrollView style={{ backgroundColor: "#fff" }}
         scrollEnabled={false}>
         <ImageBackground blurRadius={1}
-          source={require('../../assets/bg.jpg')}
+          source={require('../../assets/bg.jpeg')}
           style={{ width, height }}>
           <View style={{
             flex: 1, marginTop: 0.12 * height, marginHorizontal: 20,
@@ -155,67 +155,72 @@ class Register extends Component {
               <View style={[flexCenter, { flex: 2.3, flexDirection: 'column' }]}>
                 <H3 text={"Full Name:".toUpperCase()} style={{
                   marginVertical: 5,
-                  color: '#ccc',
+                  color: '#4f4f4f',
                   fontFamily: 'Helvetica'
                 }} />
                 <EditTextHighlight
                   onChangeText={this.changeFullname.bind(this)}
                   autoCapitalize='none'
-                  addition={{ padding: 8, fontSize: 16, width: '100%' }}
+                  placeholder="Your fullname"
+                  addition={{ padding: 8, fontSize: 16, width: '100%', backgroundColor: 'rgba(219, 219, 219,0.5)' }}
                   value={this.state.fullname}
                 />
                 <H3 text={"Email:".toUpperCase()} style={{
                   marginVertical: 5,
-                  color: '#ccc',
+                  color: '#4f4f4f',
                   fontFamily: 'Helvetica'
                 }} />
                 <EditTextHighlight
                   onChangeText={this.changeEmail.bind(this)}
                   autoCapitalize='none'
-                  addition={{ padding: 8, fontSize: 16, width: '100%' }}
+                  placeholder="Your email"
+                  addition={{ padding: 8, fontSize: 16, width: '100%', backgroundColor: 'rgba(219, 219, 219,0.5)' }}
                   value={this.state.email}
                 />
               </View>
             </View>
             <H3 text={"User Name:".toUpperCase()} style={{
               marginVertical: 5,
-              color: '#ccc',
+              color: '#4f4f4f',
               fontFamily: 'Helvetica'
             }} />
             <EditTextHighlight
               onChangeText={this.changeUsername.bind(this)}
               autoCapitalize='none'
-              addition={{ padding: 8, fontSize: 16, }}
+              placeholder="Your username"
+              addition={{ padding: 8, fontSize: 16, backgroundColor: 'rgba(219, 219, 219,0.5)' }}
               value={this.state.username}
             />
             <H3 text={"Password:".toUpperCase()} style={{
               marginVertical: 5,
-              color: '#ccc',
+              color: '#4f4f4f',
               fontFamily: 'Helvetica'
             }} />
             <EditTextHighlight secureTextEntry onChangeText={this.changePassword.bind(this)}
-              addition={{ padding: 8, fontSize: 16 }}
+              addition={{ padding: 8, fontSize: 16, backgroundColor: 'rgba(219, 219, 219,0.5)' }}
               value={this.state.password}
+              placeholder="Your password"
             />
             <H3 text={"Retype password:".toUpperCase()} style={{
               marginVertical: 5,
-              color: '#ccc',
+              color: '#4f4f4f',
               fontFamily: 'Helvetica'
             }} />
             <EditTextHighlight secureTextEntry onChangeText={this.changeRePassword.bind(this)}
-              addition={{ padding: 8, fontSize: 16 }}
+              addition={{ padding: 8, fontSize: 16, backgroundColor: 'rgba(219, 219, 219,0.5)' }}
               value={this.state.rePassword}
+              placeholder="Your password again"
             />
             <Button onPress={this.registerToApp.bind(this)}
               style={{ backgroundColor: '#3097d2', marginTop: 30 }}>
               <H3 text={"Register".toUpperCase()} style={{
                 color: '#fff', paddingVertical: 15,
-                fontFamily: 'Helvetica'
+                fontFamily: 'Helvetica',
               }} />
             </Button>
             <Button onPress={() => this.props.navigation.goBack()}
               style={{ backgroundColor: 'transparent', marginTop: 5 }}>
-              <H3 text={"Login".toUpperCase()} style={{
+              <H3 text={"Back to Login".toUpperCase()} style={{
                 color: '#fff',
                 paddingVertical: 15,
                 fontFamily: 'Helvetica',
